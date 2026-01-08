@@ -1,0 +1,32 @@
+name: Deploy Web
+
+on:
+  push:
+    branches:
+      - main
+
+    workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build WASM dist
+        run: ./gradlew :composeApp:wasmJsBrowserDistribution
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./composeApp/build/dist/wasmJs/productionExecutable --project-name=jufk-prod
