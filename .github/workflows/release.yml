@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  web:
+    name: Deploy Web to Prod
+    uses: ./.github/workflows/template-web-build-and-deploy.yml
+    with:
+      cloudflare_project_name: jufk-prod
+    secrets: inherit
+
+  github-release:
+    name: Create GitHub Release
+    needs: web
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          draft: false
+          prerelease: false
