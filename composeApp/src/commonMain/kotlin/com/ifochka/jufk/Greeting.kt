@@ -3,7 +3,5 @@ package com.ifochka.jufk
 class Greeting {
     private val platform = getPlatform()
 
-    fun greet(): String {
-        return "Hello, ${platform.name}!"
-    }
+    fun greet(): String = "Hello, ${platform.name}!"
 }

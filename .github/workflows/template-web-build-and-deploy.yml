@@ -1,0 +1,35 @@
+name: Build and Deploy Web
+
+on:
+  workflow_call:
+    inputs:
+      cloudflare_project_name:
+        description: 'Cloudflare Pages project name (jufk-test or jufk-prod)'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build WASM dist
+        run: ./gradlew :composeApp:wasmJsBrowserDistribution
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy ./composeApp/build/dist/wasmJs/productionExecutable --project-name=${{ inputs.cloudflare_project_name }}
