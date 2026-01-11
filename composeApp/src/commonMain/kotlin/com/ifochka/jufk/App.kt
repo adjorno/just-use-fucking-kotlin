@@ -1,17 +1,11 @@
 package com.ifochka.jufk
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,11 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import jufk.composeapp.generated.resources.Res
-import jufk.composeapp.generated.resources.compose_multiplatform
 
 @Composable
 @Preview
@@ -33,7 +23,7 @@ fun App() {
     MaterialTheme {
         Box(
             modifier = Modifier.fillMaxSize().background(Color.Black),
-            contentAlignment = Alignment.TopCenter
+            contentAlignment = Alignment.TopCenter,
         ) {
             Text(
                 text = buildAnnotatedString {
@@ -42,8 +32,8 @@ fun App() {
                         SpanStyle(
                             fontSize = 72.sp,
                             fontWeight = FontWeight.Normal,
-                            color = Color(0xFF8A45FC)
-                        )
+                            color = Color(0xFF8A45FC),
+                        ),
                     ) {
                         append("Kotlin")
                     }
