@@ -1,0 +1,29 @@
+name: Compute Release Version
+
+on:
+  workflow_call:
+    outputs:
+      version:
+        description: 'Computed release version string (from tag)'
+        value: ${{ jobs.compute.outputs.version }}
+
+jobs:
+  compute:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/v}
+          else
+            VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//' || echo "0.0.0")
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Computed release version: $VERSION"

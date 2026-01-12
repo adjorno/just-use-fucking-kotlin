@@ -1,0 +1,39 @@
+name: Compute CI Version
+
+on:
+  workflow_call:
+    outputs:
+      version:
+        description: 'Computed CI version string (lastTag.timestamp.sha)'
+        value: ${{ jobs.compute.outputs.version }}
+
+jobs:
+  compute:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute version
+        id: version
+        run: |
+          # Get latest release tag
+          LAST_TAG=$(git tag --sort=-v:refname | head -1)
+          LAST_TAG=${LAST_TAG:-v0.0.0}
+          LAST_VERSION=${LAST_TAG#v}
+
+          # Get UTC timestamp
+          TIMESTAMP=$(date -u +%Y%m%d.%H%M)
+
+          # Get short commit SHA
+          SHORT_SHA=$(git rev-parse --short=7 HEAD)
+
+          # Combine: 1.0.0.20260111.1430.a3f2b1c
+          VERSION="${LAST_VERSION}.${TIMESTAMP}.${SHORT_SHA}"
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Computed CI version: $VERSION"
