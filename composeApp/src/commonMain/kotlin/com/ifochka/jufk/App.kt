@@ -38,6 +38,7 @@ fun App() {
                         append("Kotlin")
                     }
                     append(".\nPeriod.")
+                    append("\n${BuildKonfig.VERSION_NAME}")
                 },
                 color = Color.White,
                 fontSize = 72.sp,

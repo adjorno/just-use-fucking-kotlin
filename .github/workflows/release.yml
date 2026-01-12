@@ -6,10 +6,15 @@ on:
       - 'v*'
 
 jobs:
+  version:
+    uses: ./.github/workflows/template-compute-release-version.yml
+
   web:
     name: Deploy Web to Prod
+    needs: version
     uses: ./.github/workflows/template-web-build-and-deploy.yml
     with:
+      version: ${{ needs.version.outputs.version }}
       cloudflare_project_name: jufk-prod
     secrets: inherit
 

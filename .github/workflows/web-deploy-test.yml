@@ -7,9 +7,14 @@ on:
   workflow_dispatch:
 
 jobs:
+  version:
+    uses: ./.github/workflows/template-compute-ci-version.yml
+
   web:
     name: Deploy Web to Test
+    needs: version
     uses: ./.github/workflows/template-web-build-and-deploy.yml
     with:
+      version: ${{ needs.version.outputs.version }}
       cloudflare_project_name: jufk-test
     secrets: inherit

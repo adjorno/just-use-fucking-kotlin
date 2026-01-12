@@ -3,6 +3,10 @@ name: Build and Deploy Web
 on:
   workflow_call:
     inputs:
+      version:
+        description: 'Version string (e.g., 1.2.3 or 1.2.3.20260101.1430.abc1234)'
+        required: true
+        type: string
       cloudflare_project_name:
         description: 'Cloudflare Pages project name (jufk-test or jufk-prod)'
         required: true
@@ -25,7 +29,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build WASM dist
-        run: ./gradlew :composeApp:wasmJsBrowserDistribution
+        run: ./gradlew :composeApp:wasmJsBrowserDistribution -PVERSION_NAME=${{ inputs.version }}
 
       - name: Deploy to Cloudflare
         uses: cloudflare/wrangler-action@v3
