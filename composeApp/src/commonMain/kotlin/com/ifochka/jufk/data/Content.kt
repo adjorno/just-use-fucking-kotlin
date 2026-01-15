@@ -15,12 +15,12 @@ object Content {
         SocialLink(
             name = "X",
             icon = Res.drawable.icon_x,
-            url = "https://github.com/adjorno/just-use-fucking-kotlin",
+            url = "https://x.com/adjorno",
         ),
         SocialLink(
             name = "LinkedIn",
             icon = Res.drawable.icon_linkedin,
-            url = "https://github.com/adjorno/just-use-fucking-kotlin",
+            url = "https://www.linkedin.com/in/mykhailo-dorokhin-0b99305a",
         ),
     )
 }

@@ -1,0 +1,88 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build iOS app"
+  lane :build do |options|
+    version_name = options[:version]
+    match = version_name.match(/(\d+\.\d+\.\d+)/)
+    sanitized_version = match ? match[1] : "1.0.0"
+
+    build_number = options[:build_number]
+    unless build_number
+      begin
+        build_number = latest_testflight_build_number(
+          api_key_path: ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+        ) + 1
+      rescue => e
+        UI.message("Failed to get build number from TestFlight, defaulting to 1. Error: #{e.message}")
+        build_number = 1
+      end
+    end
+
+    UI.message("Building version #{version_name} (#{build_number})")
+
+## .  The following API does not make any effect in case GENERATE_INFOPLIST_FILE = true
+#     increment_version_number(
+#       version_number: sanitized_version,
+#       xcodeproj: "iosApp/iosApp.xcodeproj"
+#     )
+#
+#     increment_build_number(
+#       build_number: build_number,
+#       xcodeproj: "iosApp/iosApp.xcodeproj"
+#     )
+
+    ENV["VERSION_NAME"] = version_name
+
+    signing_settings = {
+      team_id: ENV.fetch('DEVELOPMENT_TEAM'),
+      profile: ENV.fetch("PROVISIONING_PROFILE_SPECIFIER"),
+      identity: "Apple Distribution"
+    }
+
+    build_app(
+      project: "iosApp/iosApp.xcodeproj",
+      scheme: "iosApp",
+      output_directory: "iosApp/build",
+      output_name: "JUFK.ipa",
+      export_method: "app-store",
+      xcargs: [
+          "DEVELOPMENT_TEAM=#{signing_settings[:team_id]}",
+          "CODE_SIGN_STYLE=Manual",
+          "CODE_SIGN_IDENTITY='#{signing_settings[:identity]}'",
+          "PROVISIONING_PROFILE_SPECIFIER='#{signing_settings[:profile]}'",
+          "MARKETING_VERSION=#{sanitized_version}",
+          "CURRENT_PROJECT_VERSION=#{build_number}"
+        ].join(" "),
+      export_options: {
+        signingStyle: "manual",
+        provisioningProfiles: {
+          CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier) => signing_settings[:profile]
+        }
+      }
+    )
+
+    lane_context[:VERSION_NAME] = version_name
+    lane_context[:BUILD_NUMBER] = build_number
+  end
+
+  desc "Deploy to TestFlight"
+  lane :testflight_upload do |options|
+    build(version: options[:version])
+    upload_to_testflight(
+      api_key_path: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  desc "Deploy to App Store"
+  lane :release do |options|
+    build(version: options[:version])
+    upload_to_app_store(
+      api_key_path: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+      skip_screenshots: true,
+      skip_metadata: false,
+      submit_for_review: false
+    )
+  end
+end

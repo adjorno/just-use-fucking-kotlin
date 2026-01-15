@@ -1,0 +1,22 @@
+name: Publish iOS to TestFlight
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'composeApp/**/*.kt'
+      - 'iosApp/**'
+  workflow_dispatch:
+
+jobs:
+  compute-version:
+    uses: ./.github/workflows/template-compute-ci-version.yml
+
+  deploy:
+    needs: compute-version
+    uses: ./.github/workflows/template-ios-build-and-publish.yml
+    with:
+      destination: testflight_upload
+      version: ${{ needs.compute-version.outputs.version }}
+    secrets: inherit
