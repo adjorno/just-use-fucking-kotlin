@@ -18,9 +18,27 @@ jobs:
       cloudflare_project_name: jufk-prod
     secrets: inherit
 
+  ios:
+    name: Deploy iOS to App Store
+    needs: version
+    uses: ./.github/workflows/template-ios-build-and-publish.yml
+    with:
+      destination: testflight_upload
+      version: ${{ needs.version.outputs.version }}
+    secrets: inherit
+
+  android:
+    name: Deploy Android to Production
+    needs: version
+    uses: ./.github/workflows/template-android-build-and-publish.yml
+    with:
+      destination: alpha
+      version: ${{ needs.version.outputs.version }}
+    secrets: inherit
+
   github-release:
     name: Create GitHub Release
-    needs: web
+    needs: [web, ios, android]
     runs-on: ubuntu-latest
     permissions:
       contents: write

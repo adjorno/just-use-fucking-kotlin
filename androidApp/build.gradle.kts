@@ -17,8 +17,18 @@ android {
         applicationId = "com.ifochka.jufk"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = (project.findProperty("VERSION_CODE") as String?)?.toIntOrNull() ?: 1
+        versionName = (project.findProperty("VERSION_NAME") as String?) ?: "0.0.1"
+    }
+    signingConfigs {
+        create("release") {
+            System.getenv("ANDROID_KEYSTORE_PATH")?.let { keyStore ->
+                storeFile = file(keyStore)
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+            }
+        }
     }
     packaging {
         resources {
@@ -28,6 +38,7 @@ android {
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
@@ -35,6 +46,5 @@ android {
 dependencies {
     implementation(projects.composeApp)
     implementation(libs.androidx.activity.compose)
-    debugImplementation(compose.uiTooling)
     testImplementation(libs.junit)
 }
