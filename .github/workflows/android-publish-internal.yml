@@ -1,0 +1,22 @@
+name: Publish Android to Internal Track
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'composeApp/**/*.kt'
+      - 'androidApp/**'
+  workflow_dispatch:
+
+jobs:
+  compute-version:
+    uses: ./.github/workflows/template-compute-ci-version.yml
+
+  deploy:
+    needs: compute-version
+    uses: ./.github/workflows/template-android-build-and-publish.yml
+    with:
+      destination: internal
+      version: ${{ needs.compute-version.outputs.version }}
+    secrets: inherit

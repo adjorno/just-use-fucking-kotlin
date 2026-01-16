@@ -1,1 +1,4 @@
 app_identifier("com.ifochka.jufk")
+
+json_key_file(ENV["PLAY_STORE_SERVICE_ACCOUNT_JSON_PATH"])
+package_name("com.ifochka.jufk")

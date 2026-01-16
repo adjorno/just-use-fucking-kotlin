@@ -86,3 +86,81 @@ platform :ios do
     )
   end
 end
+
+platform :android do
+  def fetch_next_play_store_version_code
+    tracks = %w[internal alpha beta production]
+    all_version_codes = []
+
+    tracks.each do |track|
+      begin
+        codes = google_play_track_version_codes(
+          track: track,
+          json_key_data: ENV["PLAY_SERVICE_ACCOUNT_JSON"]
+        )
+        all_version_codes.concat(codes) if codes
+      rescue => e
+        UI.message("Skipping track #{track}: #{e.message}")
+      end
+    end
+
+    (all_version_codes.max || 0) + 1
+  end
+
+  desc "Build Android app"
+  lane :build do |options|
+    version_name = options[:version] || "1.0.0"
+    match = version_name.match(/(\d+\.\d+\.\d+)/)
+    sanitized_version = match ? match[1] : "1.0.0"
+
+    begin
+      version_code = fetch_next_play_store_version_code
+    rescue => e
+      UI.error("Failed to get version code from Play Store, defaulting to 1. Error: #{e.message}")
+      version_code = 1
+    end # Fix: Added missing end
+
+    UI.message("Building Android version #{sanitized_version} (#{version_code})")
+
+    gradle(
+      task: "bundle",
+      build_type: "Release",
+      properties: (options[:gradle_properties] || {}).merge({
+        "VERSION_NAME" => sanitized_version,
+        "VERSION_CODE" => version_code.to_s
+      })
+    )
+  end
+
+  desc "Deploy to a specific Play Store track"
+  private_lane :deploy_to_track do |options|
+    build(version: options[:version])
+
+    upload_to_play_store(
+      track: options[:track],
+      # Recommendation: Use the path from the gradle action output
+      aab: lane_context[SharedValues::GRADLE_AAB_OUTPUT_PATH],
+      json_key_data: ENV["PLAY_SERVICE_ACCOUNT_JSON"]
+    )
+  end
+
+  desc "Deploy to Play Store internal track"
+  lane :internal do |options|
+    deploy_to_track(track: "internal", version: options[:version])
+  end
+
+  desc "Deploy to Play Store alpha track"
+  lane :alpha do |options|
+    deploy_to_track(track: "alpha", version: options[:version])
+  end
+
+  desc "Deploy to Play Store beta track"
+  lane :beta do |options|
+    deploy_to_track(track: "beta", version: options[:version])
+  end
+
+  desc "Deploy to Play Store production"
+  lane :production do |options|
+    deploy_to_track(track: "production", version: options[:version])
+  end
+end
