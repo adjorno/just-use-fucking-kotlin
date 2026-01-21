@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.buildkonfig) apply false
+    alias(libs.plugins.kotlinSerialization) apply false
 }
 
 subprojects {
@@ -27,8 +28,13 @@ subprojects {
                 ?: project.findProperty("VERSION_NAME")?.toString()
                 ?: "local build"
 
+            val youtubeApiKey = System.getenv("YOUTUBE_API_KEY")
+                ?: project.findProperty("YOUTUBE_API_KEY")?.toString()
+                ?: "YOUTUBE_API_KEY_PLACEHOLDER"
+
             defaultConfigs {
                 buildConfigField(STRING, "VERSION_NAME", versionName)
+                buildConfigField(STRING, "YOUTUBE_API_KEY", youtubeApiKey)
             }
         }
     }
