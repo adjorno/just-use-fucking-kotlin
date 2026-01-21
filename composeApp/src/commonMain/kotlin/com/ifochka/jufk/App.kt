@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,6 +21,7 @@ import com.ifochka.jufk.data.Content
 import com.ifochka.jufk.ui.JufkTheme
 import com.ifochka.jufk.ui.components.Footer
 import com.ifochka.jufk.ui.components.HeroSection
+import com.ifochka.jufk.youtube.YoutubeSection
 import com.ifochka.jufk.youtube.YoutubeVideo
 import com.ifochka.jufk.youtube.YoutubeVideoDataSourceFromApi
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -30,12 +30,15 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App() {
     var videos by mutableStateOf(emptyList<YoutubeVideo>())
+    var isVideosLoading by mutableStateOf(false)
 
     LaunchedEffect(Unit) {
+        isVideosLoading = true
         val youtubeVideosDataSource = YoutubeVideoDataSourceFromApi(
             apiKey = BuildKonfig.YOUTUBE_API_KEY,
             httpClient = createHttpClient(),
         )
+        isVideosLoading = false
         videos = youtubeVideosDataSource.fetchVideos(Content.YOUTUBE_PLAYLIST_ID)
     }
     JufkTheme {
@@ -53,7 +56,10 @@ fun App() {
                     HeroSection()
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    Text("There are ${videos.size} videos in the playlist.")
+                    YoutubeSection(
+                        isLoading = isVideosLoading,
+                        videos = videos,
+                    )
                 }
             }
         }
