@@ -23,4 +23,6 @@ object Content {
             url = "https://www.linkedin.com/in/mykhailo-dorokhin-0b99305a",
         ),
     )
+
+    const val YOUTUBE_PLAYLIST_ID = "PLGS6AZIpM4eHR6EWt6IZ8HeizdP8SOCxU"
 }

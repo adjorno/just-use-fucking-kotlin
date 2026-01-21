@@ -26,6 +26,8 @@ on:
         required: true
       APPLE_DEVELOPMENT_TEAM:
         required: true
+      YOUTUBE_API_KEY:
+        required: true
 
 jobs:
   deploy:
@@ -93,6 +95,7 @@ jobs:
           APP_STORE_CONNECT_API_KEY_PATH: ${{ github.workspace }}/api_key.json
           PROVISIONING_PROFILE_SPECIFIER: ${{ secrets.IOS_PROVISIONING_PROFILE_SPECIFIER }}
           DEVELOPMENT_TEAM: ${{ secrets.APPLE_DEVELOPMENT_TEAM }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: bundle exec fastlane ios ${{ inputs.destination }} version:${{ inputs.version }}
 
       - name: Clean up keychain and provisioning profile

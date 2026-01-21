@@ -1,76 +1,121 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Web, Desktop (JVM).
+# Just Use Fucking Kotlin
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+One codebase. Five platforms. Zero excuses.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+[![Web](https://img.shields.io/badge/Web-Live-brightgreen)](https://justusefuckingkotlin.com)
+[![Android](https://img.shields.io/badge/Android-Beta-yellow)](https://play.google.com/store/apps/details?id=com.ifochka.jufk)
+[![iOS](https://img.shields.io/badge/iOS-TestFlight-blue)](https://testflight.apple.com/join/sENnMKjM)
+[![Desktop](https://img.shields.io/badge/Desktop-Soon-lightgrey)]()
+[![CLI](https://img.shields.io/badge/CLI-Soon-lightgrey)]()
 
-### Build and Run Android Application
+## What Is This?
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+A proof that **Kotlin Multiplatform is production-ready**. One Kotlin codebase deployed to:
 
-### Build and Run Desktop (JVM) Application
+| Platform | Technology | Status | Try It |
+|----------|------------|--------|--------|
+| 🌐 Web | Kotlin/WASM + Compose Multiplatform | Live | [justusefuckingkotlin.com](https://justusefuckingkotlin.com) |
+| 🤖 Android | Kotlin/JVM + Jetpack Compose | Beta | [Play Store](https://play.google.com/store/apps/details?id=com.ifochka.jufk) |
+| 🍎 iOS | Kotlin/Native + Compose Multiplatform | TestFlight | [TestFlight](https://testflight.apple.com/join/sENnMKjM) |
+| 🖥️ Desktop | Kotlin/JVM + Compose Desktop | Coming Soon | - |
+| ⌨️ CLI | Kotlin/Native | Coming Soon | - |
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
+## How It Was Made
 
-### Build and Run Web Application
+This entire project was built live on YouTube. Every line of code, every deployment, every mistake.
 
-To build and run the development version of the web app, use the run configuration from the run widget
-in your IDE's toolbar or run it directly from the terminal:
-- for the Wasm target (faster, modern browsers):
-  - on macOS/Linux
-    ```shell
-    ./gradlew :composeApp:wasmJsBrowserDevelopmentRun
-    ```
-  - on Windows
-    ```shell
-    .\gradlew.bat :composeApp:wasmJsBrowserDevelopmentRun
-    ```
-- for the JS target (slower, supports older browsers):
-  - on macOS/Linux
-    ```shell
-    ./gradlew :composeApp:jsBrowserDevelopmentRun
-    ```
-  - on Windows
-    ```shell
-    .\gradlew.bat :composeApp:jsBrowserDevelopmentRun
-    ```
+**Watch the full series:** [JUFK Tutorial Playlist](https://www.youtube.com/playlist?list=PLGS6AZIpM4eHR6EWt6IZ8HeizdP8SOCxU)
 
-### Build and Run iOS Application
+| Session | What You'll Learn |
+|---------|-------------------|
+| 1 | Kotlin Multiplatform from scratch to production in 15 minutes |
+| 2 | KMP plugin migration & Gradle build optimization |
+| 3 | CI quality gates with ktlint, detekt & test/prod environments |
+| 4.1 | Build-time version injection with BuildKonfig |
+| 4.2 | Theme system, social links & footer components |
+| 5 | iOS deployment to TestFlight with fastlane & GitHub Actions |
+| 6 | Android deployment to Play Store + complete release pipeline |
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+## Tech Stack
+
+- **Language:** Kotlin 2.3.0
+- **UI Framework:** Compose Multiplatform 1.9.3
+- **Build System:** Gradle with Version Catalogs
+- **CI/CD:** GitHub Actions
+- **Web Hosting:** Cloudflare Pages (WASM)
+- **iOS Distribution:** fastlane + TestFlight
+- **Android Distribution:** fastlane + Play Store
+- **Code Quality:** ktlint + detekt
+
+## Project Structure
+
+```
+├── composeApp/          # Shared Kotlin Multiplatform code
+│   ├── commonMain/      # Shared UI and logic
+│   ├── androidMain/     # Android-specific code
+│   ├── iosMain/         # iOS-specific code
+│   ├── wasmJsMain/      # Web-specific code
+│   └── jvmMain/         # Desktop-specific code
+├── androidApp/          # Android application module
+├── iosApp/              # iOS Xcode project
+├── fastlane/            # iOS & Android deployment automation
+└── .github/workflows/   # CI/CD pipelines
+```
+
+## Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/adjorno/JUFK.git
+cd JUFK
+
+# Run on Web (WASM)
+./gradlew :composeApp:wasmJsBrowserRun
+
+# Run on Android
+./gradlew :androidApp:installDebug
+
+# Run on Desktop
+./gradlew :composeApp:run
+
+# Run iOS (requires macOS + Xcode)
+open iosApp/iosApp.xcodeproj
+```
+
+## CI/CD Pipeline
+
+Every merge to `main`:
+- Deploys Web to [test.justusefuckingkotlin.com](https://test.justusefuckingkotlin.com)
+- Uploads iOS to TestFlight (internal)
+- Uploads Android to Play Store (alpha track)
+
+Every version tag (`v*`):
+- Deploys Web to [justusefuckingkotlin.com](https://justusefuckingkotlin.com)
+- Uploads iOS to App Store
+- Uploads Android to Play Store (production)
+- Creates GitHub Release
+
+## Links
+
+- 🌐 **Website:** [justusefuckingkotlin.com](https://justusefuckingkotlin.com)
+- 📺 **YouTube:** [JUFK Tutorial Series](https://www.youtube.com/playlist?list=PLGS6AZIpM4eHR6EWt6IZ8HeizdP8SOCxU)
+- 🐦 **Twitter/X:** [@adjorno](https://x.com/adjorno)
+- 💼 **LinkedIn:** [Mykhailo Dorokhin](https://www.linkedin.com/in/mykhailo-dorokhin-0b99305a)
+
+## Contributing
+
+We're an open-source project and love hearing from the community! Feel free to:
+
+- Open **issues** for bugs you find
+- Submit **feature requests** for things you'd like to see
+- Start **discussions** about Kotlin Multiplatform
+
+Due to the rise of coding agents, we can't accept pull requests without prior verbal agreement. If you'd like to contribute code, please reach out first via [Twitter/X](https://x.com/adjorno) or open an issue to discuss.
+
+## License
+
+Apache 2.0
 
 ---
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
-
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+*Just use fucking Kotlin. Period.*

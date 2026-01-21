@@ -30,10 +30,12 @@ jobs:
 
       - name: Build WASM dist
         run: ./gradlew :composeApp:wasmJsBrowserDistribution -PVERSION_NAME=${{ inputs.version }}
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
 
       - name: Deploy to Cloudflare
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy ./composeApp/build/dist/wasmJs/productionExecutable --project-name=${{ inputs.cloudflare_project_name }}
+          command: pages deploy ./composeApp/build/dist/wasmJs/productionExecutable --project-name=${{ inputs.cloudflare_project_name }} --branch main
