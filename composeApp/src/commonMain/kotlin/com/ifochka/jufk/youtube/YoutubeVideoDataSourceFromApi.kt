@@ -15,7 +15,7 @@ class YoutubeVideoDataSourceFromApi(
             parameter("part", "snippet")
             parameter("playlistId", playlistId)
             parameter("key", apiKey)
-            parameter("maxResults", 50)
+            parameter("maxResults", MAX_VIDEOS)
         }
         val playlistText = playlistResponse.bodyAsText()
         val playlist = json.decodeFromString<YoutubePlaylistResponse>(playlistText)
@@ -30,6 +30,8 @@ class YoutubeVideoDataSourceFromApi(
     }
 
     companion object {
+        private const val MAX_VIDEOS = 50
+
         val json = Json {
             ignoreUnknownKeys = true
             isLenient = true
