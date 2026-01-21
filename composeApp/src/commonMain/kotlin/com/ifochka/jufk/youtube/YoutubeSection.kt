@@ -1,7 +1,10 @@
 package com.ifochka.jufk.youtube
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -48,12 +51,32 @@ fun YoutubeSection(
             }
 
             else -> {
-                LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    items(videos.size) { index ->
-                        VideoCard(videos[index])
+                BoxWithConstraints {
+                    val cardFitInARow = ((maxWidth + 32.dp) / (280.dp + 32.dp)).toInt()
+                    if (cardFitInARow >= 3) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.Start,
+                        ) {
+                            videos.chunked(cardFitInARow).forEach { rowVideos ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                ) {
+                                    rowVideos.forEach { VideoCard(it) }
+                                }
+                            }
+                        }
+                    } else {
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            items(videos.size) { index ->
+                                VideoCard(videos[index])
+                            }
+                        }
                     }
                 }
             }
