@@ -8,4 +8,5 @@ class JVMPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = JVMPlatform()
+
 actual fun createHttpClient(): HttpClient = HttpClient(CIO)

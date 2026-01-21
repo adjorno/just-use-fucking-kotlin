@@ -9,4 +9,5 @@ class IOSPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = IOSPlatform()
+
 actual fun createHttpClient(): HttpClient = HttpClient(Darwin)

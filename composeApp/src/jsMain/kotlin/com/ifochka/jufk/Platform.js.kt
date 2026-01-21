@@ -8,4 +8,5 @@ class JsPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = JsPlatform()
+
 actual fun createHttpClient(): HttpClient = HttpClient(Js)
