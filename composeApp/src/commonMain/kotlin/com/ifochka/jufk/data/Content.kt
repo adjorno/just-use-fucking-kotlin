@@ -28,7 +28,8 @@ object Content {
 
     val Fucking = when (getPlatform().name) {
         Platform.IOS,
-        Platform.ANDROID -> "F*cking"
+        Platform.ANDROID,
+        -> "F*cking"
 
         else -> "Fucking"
     }
