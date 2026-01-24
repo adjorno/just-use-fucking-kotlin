@@ -10,12 +10,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
+import com.ifochka.jufk.data.Content
 
 @Composable
 fun HeroSection() {
     Text(
         text = buildAnnotatedString {
-            append("Just Use Fucking ")
+            append("Just Use ${Content.Fucking} ")
             withStyle(
                 SpanStyle(
                     fontSize = 72.sp,

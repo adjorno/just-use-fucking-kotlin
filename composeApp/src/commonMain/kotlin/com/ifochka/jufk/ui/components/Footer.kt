@@ -23,11 +23,14 @@ import com.ifochka.jufk.data.SocialLink
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun Footer(links: List<SocialLink>) {
+fun Footer(
+    modifier: Modifier = Modifier,
+    links: List<SocialLink>,
+) {
     val uriHandler = LocalUriHandler.current
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
             .padding(horizontal = 32.dp),
