@@ -89,9 +89,39 @@ compose.desktop {
         mainClass = "com.ifochka.jufk.MainKt"
 
         nativeDistributions {
+            packageName = "JUFK"
+            packageVersion = project.findProperty("VERSION_NAME") as? String ?: "1.0.0"
+
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.ifochka.jufk"
-            packageVersion = "1.0.0"
+
+            macOS {
+                bundleID = "com.ifochka.jufk"
+                iconFile.set(project.file("icons/icon.icns"))
+
+                // App Store category
+                appCategory = "public.app-category.utilities"
+
+                // Set minimum macOS version to 12.0 for arm64 support
+                minimumSystemVersion = "12.0"
+
+                // Optional signing configuration
+                val signIdentity = System.getenv("MAC_SIGN_IDENTITY")
+
+                if (!signIdentity.isNullOrBlank()) {
+                    signing {
+                        sign.set(true)
+                        identity.set(signIdentity)
+                    }
+                }
+            }
+
+            windows {
+                iconFile.set(project.file("icons/icon.ico"))
+            }
+
+            linux {
+                iconFile.set(project.file("icons/icon.png"))
+            }
         }
     }
 }
