@@ -1,0 +1,38 @@
+name: Build Desktop DEB
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'App version (e.g., 1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build Linux DEB
+        run: ./gradlew :composeApp:packageDeb -PVERSION_NAME=${{ inputs.version }}
+
+      - name: Find and rename DEB
+        run: |
+          DEB_PATH=$(find composeApp/build/compose/binaries/main/deb -name "*.deb" | head -1)
+          mv "$DEB_PATH" JUFK-${{ inputs.version }}.deb
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JUFK-${{ inputs.version }}.deb
+          path: JUFK-${{ inputs.version }}.deb

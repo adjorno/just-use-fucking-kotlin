@@ -6,49 +6,197 @@ on:
       - 'v*'
 
 jobs:
-  version:
-    uses: ./.github/workflows/template-compute-release-version.yml
+  # =============================================================================
+  # VERSION EXTRACTION
+  # =============================================================================
 
-  web:
-    name: Deploy Web to Prod
-    needs: version
-    uses: ./.github/workflows/template-web-build-and-deploy.yml
+  extract-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - name: Extract version from tag name
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+  # =============================================================================
+  # CLI STAGE - Native Binaries for All Platforms
+  # =============================================================================
+
+  cli-build-macos-arm64:
+    needs: extract-version
+    uses: ./.github/workflows/template-build-cli.yml
     with:
-      version: ${{ needs.version.outputs.version }}
-      cloudflare_project_name: jufk-prod
-    secrets: inherit
+      target: MacosArm64
+      dir: macosArm64
+      artifact_name: jufk-macos-arm64
+      runner: macos-latest
+      version: ${{ needs.extract-version.outputs.version }}
 
-  ios:
-    name: Deploy iOS to App Store
-    needs: version
+  cli-build-macos-x64:
+    needs: extract-version
+    uses: ./.github/workflows/template-build-cli.yml
+    with:
+      target: MacosX64
+      dir: macosX64
+      artifact_name: jufk-macos-x64
+      runner: macos-latest
+      version: ${{ needs.extract-version.outputs.version }}
+
+  cli-build-linux:
+    needs: extract-version
+    uses: ./.github/workflows/template-build-cli.yml
+    with:
+      target: LinuxX64
+      dir: linuxX64
+      artifact_name: jufk-linux-x64
+      runner: ubuntu-latest
+      version: ${{ needs.extract-version.outputs.version }}
+
+  cli-build-windows:
+    needs: extract-version
+    uses: ./.github/workflows/template-build-cli.yml
+    with:
+      target: MingwX64
+      dir: mingwX64
+      artifact_name: jufk-windows-x64.exe
+      runner: windows-latest
+      executable_extension: .exe
+      version: ${{ needs.extract-version.outputs.version }}
+
+  # =============================================================================
+  # DESKTOP STAGE - GUI App Installers
+  # =============================================================================
+
+  desktop-build-dmg:
+    needs: extract-version
+    uses: ./.github/workflows/template-build-desktop-dmg.yml
+    with:
+      version: ${{ needs.extract-version.outputs.version }}
+    secrets:
+      MAC_SIGN_IDENTITY: ${{ secrets.MAC_SIGN_IDENTITY }}
+
+  desktop-build-msi:
+    needs: extract-version
+    uses: ./.github/workflows/template-build-desktop-msi.yml
+    with:
+      version: ${{ needs.extract-version.outputs.version }}
+
+  desktop-build-deb:
+    needs: extract-version
+    uses: ./.github/workflows/template-build-desktop-deb.yml
+    with:
+      version: ${{ needs.extract-version.outputs.version }}
+
+  # =============================================================================
+  # MOBILE STAGE - iOS & Android
+  # =============================================================================
+
+  mobile-build-ios:
+    needs: extract-version
     uses: ./.github/workflows/template-ios-build-and-publish.yml
     with:
       destination: testflight_upload
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ needs.extract-version.outputs.version }}
     secrets: inherit
 
-  android:
-    name: Deploy Android to Production
-    needs: version
+  mobile-build-android:
+    needs: extract-version
     uses: ./.github/workflows/template-android-build-and-publish.yml
     with:
       destination: alpha
-      version: ${{ needs.version.outputs.version }}
+      version: ${{ needs.extract-version.outputs.version }}
     secrets: inherit
 
+  # =============================================================================
+  # WEB STAGE - Production Deployment
+  # =============================================================================
+
+  web-build-and-deploy:
+    needs: extract-version
+    uses: ./.github/workflows/template-web-build-and-deploy.yml
+    with:
+      version: ${{ needs.extract-version.outputs.version }}
+      cloudflare_project_name: jufk-prod
+    secrets: inherit
+
+  # =============================================================================
+  # HOMEBREW STAGE - Update Formula (after CLI builds complete)
+  # =============================================================================
+
+  homebrew-update:
+    needs: [
+      cli-build-macos-arm64,
+      cli-build-macos-x64,
+      cli-build-linux,
+      cli-build-windows,
+      extract-version
+    ]
+    uses: ./.github/workflows/template-update-homebrew.yml
+    with:
+      version: ${{ needs.extract-version.outputs.version }}
+      tag: ${{ needs.extract-version.outputs.tag }}
+    secrets:
+      HOMEBREW_TAP_PRIVATE_KEY: ${{ secrets.HOMEBREW_TAP_PRIVATE_KEY }}
+
+  # =============================================================================
+  # GITHUB RELEASE - Final Step (waits for everything)
+  # =============================================================================
+
   github-release:
-    name: Create GitHub Release
-    needs: [web, ios, android]
+    needs: [
+      # Mobile & Web
+      mobile-build-ios,
+      mobile-build-android,
+      web-build-and-deploy,
+      # Desktop Apps
+      desktop-build-dmg,
+      desktop-build-msi,
+      desktop-build-deb,
+      # CLI Binaries
+      cli-build-macos-arm64,
+      cli-build-macos-x64,
+      cli-build-linux,
+      cli-build-windows,
+      # Homebrew (wait for formula update)
+      homebrew-update,
+      extract-version
+    ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          find artifacts -type f
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ needs.extract-version.outputs.tag }}
           generate_release_notes: true
           draft: false
           prerelease: false
+          files: |
+            artifacts/jufk-macos-arm64/jufk-macos-arm64
+            artifacts/jufk-macos-x64/jufk-macos-x64
+            artifacts/jufk-linux-x64/jufk-linux-x64
+            artifacts/jufk-windows-x64.exe/jufk-windows-x64.exe
+            artifacts/JUFK-${{ needs.extract-version.outputs.version }}.dmg/JUFK-${{ needs.extract-version.outputs.version }}.dmg
+            artifacts/JUFK-${{ needs.extract-version.outputs.version }}.msi/JUFK-${{ needs.extract-version.outputs.version }}.msi
+            artifacts/JUFK-${{ needs.extract-version.outputs.version }}.deb/JUFK-${{ needs.extract-version.outputs.version }}.deb

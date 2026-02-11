@@ -5,8 +5,8 @@ One codebase. Five platforms. Zero excuses.
 [![Web](https://img.shields.io/badge/Web-Live-brightgreen)](https://justusefuckingkotlin.com)
 [![Android](https://img.shields.io/badge/Android-Beta-yellow)](https://play.google.com/store/apps/details?id=com.ifochka.jufk)
 [![iOS](https://img.shields.io/badge/iOS-TestFlight-blue)](https://testflight.apple.com/join/sENnMKjM)
-[![Desktop](https://img.shields.io/badge/Desktop-Soon-lightgrey)]()
-[![CLI](https://img.shields.io/badge/CLI-Soon-lightgrey)]()
+[![Desktop](https://img.shields.io/badge/Desktop-Released-brightgreen)](https://github.com/adjorno/JUFK/releases)
+[![CLI](https://img.shields.io/badge/CLI-Released-brightgreen)](https://github.com/adjorno/JUFK/releases)
 
 ## What Is This?
 
@@ -17,8 +17,8 @@ A proof that **Kotlin Multiplatform is production-ready**. One Kotlin codebase d
 | 🌐 Web | Kotlin/WASM + Compose Multiplatform | Live | [justusefuckingkotlin.com](https://justusefuckingkotlin.com) |
 | 🤖 Android | Kotlin/JVM + Jetpack Compose | Beta | [Play Store](https://play.google.com/store/apps/details?id=com.ifochka.jufk) |
 | 🍎 iOS | Kotlin/Native + Compose Multiplatform | TestFlight | [TestFlight](https://testflight.apple.com/join/sENnMKjM) |
-| 🖥️ Desktop | Kotlin/JVM + Compose Desktop | Coming Soon | - |
-| ⌨️ CLI | Kotlin/Native | Coming Soon | - |
+| 🖥️ Desktop | Kotlin/JVM + Compose Desktop | Released (DMG, MSI, DEB) | [Releases](https://github.com/adjorno/JUFK/releases) |
+| ⌨️ CLI | Kotlin/Native | Released (Homebrew available) | [Releases](https://github.com/adjorno/JUFK/releases) |
 
 ## How It Was Made
 
@@ -35,6 +35,33 @@ This entire project was built live on YouTube. Every line of code, every deploym
 | 4.2 | Theme system, social links & footer components |
 | 5 | iOS deployment to TestFlight with fastlane & GitHub Actions |
 | 6 | Android deployment to Play Store + complete release pipeline |
+
+## Installation
+
+### CLI (Homebrew)
+
+```bash
+brew tap adjorno/jufk
+brew install jufk
+jufk
+```
+
+### CLI (Direct Download)
+
+Download binaries from [GitHub Releases](https://github.com/adjorno/JUFK/releases):
+
+- **macOS (Apple Silicon):** `jufk-macos-arm64`
+- **macOS (Intel):** `jufk-macos-x64`
+- **Linux:** `jufk-linux-x64`
+- **Windows:** `jufk-windows-x64.exe`
+
+### Desktop Apps
+
+Download installers from [GitHub Releases](https://github.com/adjorno/JUFK/releases):
+
+- **macOS:** `JUFK-{version}.dmg`
+- **Windows:** `JUFK-{version}.msi`
+- **Linux:** `JUFK-{version}.deb`
 
 ## Tech Stack
 
@@ -78,6 +105,10 @@ cd JUFK
 # Run on Desktop
 ./gradlew :composeApp:run
 
+# Build CLI (native binary)
+./gradlew :cliApp:linkReleaseExecutableMacosArm64
+./cliApp/build/bin/macosArm64/releaseExecutable/jufk.kexe
+
 # Run iOS (requires macOS + Xcode)
 open iosApp/iosApp.xcodeproj
 ```
@@ -93,7 +124,10 @@ Every version tag (`v*`):
 - Deploys Web to [justusefuckingkotlin.com](https://justusefuckingkotlin.com)
 - Uploads iOS to App Store
 - Uploads Android to Play Store (production)
-- Creates GitHub Release
+- Publishes Desktop apps (DMG, MSI, DEB)
+- Publishes CLI binaries (all platforms)
+- Updates Homebrew formula
+- Creates GitHub Release with all artifacts
 
 ## Links
 
