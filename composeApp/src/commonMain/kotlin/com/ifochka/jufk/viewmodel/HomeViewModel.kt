@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import com.ifochka.jufk.BuildKonfig
 import com.ifochka.jufk.createHttpClient
 import com.ifochka.jufk.data.Content
+import com.ifochka.jufk.data.InspirationLink
 import com.ifochka.jufk.data.PlatformSection
 import com.ifochka.jufk.data.SocialLink
 import com.ifochka.jufk.youtube.YoutubeVideo
@@ -25,6 +26,9 @@ data class HomeUiState(
     val makingOfHeading: String = Content.MAKING_OF_HEADING,
     val videos: List<YoutubeVideo> = emptyList(),
     val isLoadingVideos: Boolean = true,
+    val inspirationText: String = Content.INSPIRATION_TEXT,
+    val inspirationLinks: List<InspirationLink> = Content.inspirationLinks,
+    val inspirationSuffix: String = Content.INSPIRATION_SUFFIX,
 )
 
 /**
