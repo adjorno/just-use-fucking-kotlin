@@ -110,8 +110,6 @@ platform :android do
   desc "Build Android app"
   lane :build do |options|
     version_name = options[:version] || "1.0.0"
-    match = version_name.match(/(\d+\.\d+\.\d+)/)
-    sanitized_version = match ? match[1] : "1.0.0"
 
     begin
       version_code = fetch_next_play_store_version_code
@@ -120,13 +118,13 @@ platform :android do
       version_code = 1
     end # Fix: Added missing end
 
-    UI.message("Building Android version #{sanitized_version} (#{version_code})")
+    UI.message("Building Android version #{version_name} (#{version_code})")
 
     gradle(
       task: "bundle",
       build_type: "Release",
       properties: (options[:gradle_properties] || {}).merge({
-        "VERSION_NAME" => sanitized_version,
+        "VERSION_NAME" => version_name,
         "VERSION_CODE" => version_code.to_s
       })
     )
