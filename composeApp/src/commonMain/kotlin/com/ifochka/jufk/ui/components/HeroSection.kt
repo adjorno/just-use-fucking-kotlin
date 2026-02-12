@@ -16,7 +16,7 @@ import com.ifochka.jufk.data.Content
 fun HeroSection() {
     Text(
         text = buildAnnotatedString {
-            append("Just Use ${Content.Fucking} ")
+            append("Just Use ${Content.getPlatformAdjective()} ")
             withStyle(
                 SpanStyle(
                     fontSize = 72.sp,

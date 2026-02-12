@@ -54,7 +54,7 @@ fun App() {
             Scaffold(
                 bottomBar = {
                     Footer(
-                        links = Content.SocialLinks,
+                        links = Content.socialLinks,
                         modifier = Modifier.navigationBarsPadding(),
                     )
                 },
