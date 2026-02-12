@@ -1,15 +1,11 @@
 package com.ifochka.jufk.data
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.Devices
 import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.QueryBuilder
 import androidx.compose.material.icons.filled.Terminal
 import com.ifochka.jufk.Platform
 import com.ifochka.jufk.getPlatform

@@ -127,17 +127,17 @@ compose.desktop {
     }
 }
 
-fun Project.getPropertyOrEnv(key: String, fallback: String): String {
-    return System.getenv(key)
+fun Project.getPropertyOrEnv(
+    key: String,
+    fallback: String,
+): String =
+    System.getenv(key)
         ?: findProperty(key)?.toString()
         ?: fallback
-}
 
 /**
  * Examples:
  *   - "1.3.0" -> "1.3.0"
  *   - "1.3.0.20260212.0826.23b713d" -> "1.3.0"
  */
-fun String.sanitiseToSemanticVersion(): String {
-    return """(\d+\.\d+\.\d+)""".toRegex().find(this)?.value ?: "1.0.0"
-}
+fun String.sanitiseToSemanticVersion(): String = """(\d+\.\d+\.\d+)""".toRegex().find(this)?.value ?: "1.0.0"
