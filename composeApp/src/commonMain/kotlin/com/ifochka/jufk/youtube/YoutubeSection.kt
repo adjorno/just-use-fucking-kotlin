@@ -29,7 +29,7 @@ fun YoutubeSection(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "This project 100% built livecoded:",
+            text = "A project built from scratch, 100% on stream:",
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground,

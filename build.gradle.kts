@@ -24,13 +24,8 @@ subprojects {
         configure<com.codingfeline.buildkonfig.gradle.BuildKonfigExtension> {
             packageName = "com.ifochka.jufk"
 
-            val versionName = System.getenv("VERSION_NAME")
-                ?: project.findProperty("VERSION_NAME")?.toString()
-                ?: "local build"
-
-            val youtubeApiKey = System.getenv("YOUTUBE_API_KEY")
-                ?: project.findProperty("YOUTUBE_API_KEY")?.toString()
-                ?: "YOUTUBE_API_KEY_PLACEHOLDER"
+            val versionName = getPropertyOrEnv(key = "VERSION_NAME", fallback = "local build")
+            val youtubeApiKey = getPropertyOrEnv(key = "YOUTUBE_API_KEY", fallback = "YOUTUBE_API_KEY_PLACEHOLDER")
 
             defaultConfigs {
                 buildConfigField(STRING, "VERSION_NAME", versionName)
@@ -54,4 +49,10 @@ subprojects {
     tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
         exclude { it.file.path.contains("/build/") }
     }
+}
+
+fun Project.getPropertyOrEnv(key: String, fallback: String): String {
+    return System.getenv(key)
+        ?: findProperty(key)?.toString()
+        ?: fallback
 }

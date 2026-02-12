@@ -1,73 +1,79 @@
 package com.ifochka.jufk
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.ifochka.jufk.data.Content
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ifochka.jufk.ui.JufkTheme
 import com.ifochka.jufk.ui.components.Footer
-import com.ifochka.jufk.ui.components.HeroSection
-import com.ifochka.jufk.youtube.YoutubeSection
-import com.ifochka.jufk.youtube.YoutubeVideo
-import com.ifochka.jufk.youtube.YoutubeVideoDataSourceFromApi
+import com.ifochka.jufk.ui.screens.HomeScreen
+import com.ifochka.jufk.ui.theme.Dimensions
+import com.ifochka.jufk.viewmodel.HomeViewModel
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
 fun App() {
-    var videos by mutableStateOf(emptyList<YoutubeVideo>())
-    var isVideosLoading by mutableStateOf(false)
-
-    LaunchedEffect(Unit) {
-        isVideosLoading = true
-        val youtubeVideosDataSource = YoutubeVideoDataSourceFromApi(
-            apiKey = BuildKonfig.YOUTUBE_API_KEY,
-            httpClient = createHttpClient(),
-        )
-        isVideosLoading = false
-        videos = youtubeVideosDataSource.fetchVideos(Content.YOUTUBE_PLAYLIST_ID)
-    }
     JufkTheme {
-        Scaffold(
-            bottomBar = {
-                Footer(
-                    links = Content.SocialLinks,
-                    modifier = Modifier.navigationBarsPadding(),
-                )
-            },
-        ) { paddingValues ->
+        val snackbarHostState = remember { SnackbarHostState() }
+        val scope = rememberCoroutineScope()
+        val viewModel = viewModel { HomeViewModel() }
+
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background,
+        ) {
             Box(
-                modifier = Modifier.fillMaxSize().background(Color.Black).padding(paddingValues),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.TopCenter,
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    HeroSection()
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    YoutubeSection(
-                        isLoading = isVideosLoading,
-                        videos = videos,
-                    )
+                Box(modifier = Modifier.widthIn(max = Dimensions.MAX_CONTENT_WIDTH).fillMaxSize()) {
+                    Scaffold(
+                        snackbarHost = {
+                            SnackbarHost(snackbarHostState) { data ->
+                                Snackbar(
+                                    snackbarData = data,
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    contentColor = MaterialTheme.colorScheme.onSurface,
+                                )
+                            }
+                        },
+                        bottomBar = {
+                            Footer(
+                                links = viewModel.uiState.socialLinks,
+                                modifier = Modifier.navigationBarsPadding(),
+                            )
+                        },
+                    ) { innerPadding ->
+                        HomeScreen(
+                            platformSections = viewModel.uiState.platformSections,
+                            videos = viewModel.uiState.videos,
+                            isLoadingVideos = viewModel.uiState.isLoadingVideos,
+                            inspirationText = viewModel.uiState.inspirationText,
+                            inspirationLinks = viewModel.uiState.inspirationLinks,
+                            inspirationSuffix = viewModel.uiState.inspirationSuffix,
+                            onCodeCopy = { _ ->
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Copied!")
+                                }
+                            },
+                            modifier = Modifier.padding(innerPadding),
+                        )
+                    }
                 }
             }
         }

@@ -35,15 +35,18 @@ This entire project was built live on YouTube. Every line of code, every deploym
 | 4.2 | Theme system, social links & footer components |
 | 5 | iOS deployment to TestFlight with fastlane & GitHub Actions |
 | 6 | Android deployment to Play Store + complete release pipeline |
+| 7.1 | Implement YouTube data fetching |
+| 7.2 | Dynamic UI content for YouTube section |
+| 8 | App Store compliance |
+| 9 | Onboard Desktop and Homebrew CLI App |
+| 10 | UI implementation according to design with Compose Multiplatform |
 
 ## Installation
 
 ### CLI (Homebrew)
 
 ```bash
-brew tap adjorno/jufk
-brew install jufk
-jufk
+brew install adjorno/jufk/jufk
 ```
 
 ### CLI (Direct Download)
@@ -85,6 +88,7 @@ Download installers from [GitHub Releases](https://github.com/adjorno/JUFK/relea
 │   └── jvmMain/         # Desktop-specific code
 ├── androidApp/          # Android application module
 ├── iosApp/              # iOS Xcode project
+├── cliApp/              # CLI application (Kotlin/Native)
 ├── fastlane/            # iOS & Android deployment automation
 └── .github/workflows/   # CI/CD pipelines
 ```
