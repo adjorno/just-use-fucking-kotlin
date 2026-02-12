@@ -1,5 +1,6 @@
 package com.ifochka.jufk.data
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Cta {
@@ -24,6 +25,7 @@ data class PlatformSection(
     val title: String,
     val content: String,
     val icon: ImageVector,
+    val iconTint: Color,
     val cta: Cta,
     val isHighlighted: Boolean = false,
 )

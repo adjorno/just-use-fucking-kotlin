@@ -3,6 +3,8 @@ package com.ifochka.jufk.viewmodel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.ifochka.jufk.BuildKonfig
 import com.ifochka.jufk.createHttpClient
 import com.ifochka.jufk.data.Content
@@ -11,7 +13,6 @@ import com.ifochka.jufk.data.PlatformSection
 import com.ifochka.jufk.data.SocialLink
 import com.ifochka.jufk.youtube.YoutubeVideo
 import com.ifochka.jufk.youtube.YoutubeVideoDataSourceFromApi
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
@@ -23,7 +24,6 @@ data class HomeUiState(
     val platformSections: List<PlatformSection> = Content.platformSections,
     val socialLinks: List<SocialLink> = Content.socialLinks,
     val footerAuthor: String = Content.FOOTER_AUTHOR,
-    val makingOfHeading: String = Content.MAKING_OF_HEADING,
     val videos: List<YoutubeVideo> = emptyList(),
     val isLoadingVideos: Boolean = true,
     val inspirationText: String = Content.INSPIRATION_TEXT,
@@ -34,9 +34,7 @@ data class HomeUiState(
 /**
  * ViewModel for the home screen.
  */
-class HomeViewModel(
-    private val coroutineScope: CoroutineScope,
-) {
+class HomeViewModel : ViewModel() {
     private val youtubeDataSource = YoutubeVideoDataSourceFromApi(
         apiKey = BuildKonfig.YOUTUBE_API_KEY,
         httpClient = createHttpClient(),
@@ -50,7 +48,7 @@ class HomeViewModel(
     }
 
     private fun loadVideos() {
-        coroutineScope.launch {
+        viewModelScope.launch {
             uiState = uiState.copy(isLoadingVideos = true)
             val videos = youtubeDataSource.fetchVideos(Content.YOUTUBE_PLAYLIST_ID)
             uiState = uiState.copy(

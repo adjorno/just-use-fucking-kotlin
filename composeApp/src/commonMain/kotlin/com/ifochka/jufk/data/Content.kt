@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Devices
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.ui.graphics.Color
 import com.ifochka.jufk.Platform
 import com.ifochka.jufk.getPlatform
 import jufk.composeapp.generated.resources.Res
@@ -15,8 +16,8 @@ import jufk.composeapp.generated.resources.icon_linkedin
 import jufk.composeapp.generated.resources.icon_x
 
 object Content {
-    private val currentPlatform = getPlatform().name
-    private val isMobilePlatform = currentPlatform in listOf(Platform.IOS, Platform.ANDROID)
+    val currentPlatform = getPlatform().name
+    val isMobilePlatform = currentPlatform in listOf(Platform.IOS, Platform.ANDROID)
 
     fun getPlatformAdjective(): String =
         when {
@@ -52,20 +53,22 @@ object Content {
         get() {
             val allSections = listOf(
                 PlatformSection(
-                    id = "web",
-                    title = "Kotlin/WASM",
+                    id = Platform.WASM,
+                    title = "Web/WASM",
                     content = "Build fast Web UIs. Compiled from the same Kotlin codebase. Seriously performant.",
                     icon = Icons.Default.Language,
+                    iconTint = Color(0xFFD500F9),
                     cta = Cta.Link(
                         text = if (isMobilePlatform) "(with the site)" else "justusefuckingkotlin.com",
                         url = WEBSITE_URL,
                     ),
                 ),
                 PlatformSection(
-                    id = "android",
+                    id = Platform.ANDROID,
                     title = "Android",
                     content = "Kotlin's native platform. Android Studio loves it. Your users will too.",
                     icon = Icons.Default.Android,
+                    iconTint = Color(0xFF00C853),
                     cta = Cta.Button(
                         text = "Get it on Google Play",
                         url = "https://play.google.com/apps/internaltest/4701355457155312910",
@@ -73,10 +76,11 @@ object Content {
                     ),
                 ),
                 PlatformSection(
-                    id = "ios",
+                    id = Platform.IOS,
                     title = "iOS",
                     content = "Yes, a Kotlin app on iOS. Compiles down to native iOS. No joke.",
                     icon = Icons.Default.Devices,
+                    iconTint = Color.White,
                     cta = Cta.Button(
                         "App Store",
                         "https://testflight.apple.com/join/sENnMKjM",
@@ -84,10 +88,11 @@ object Content {
                     ),
                 ),
                 PlatformSection(
-                    id = "desktop",
+                    id = Platform.DESKTOP,
                     title = "Desktop",
                     content = "One codebase. Your desktop app that no one asked for.",
                     icon = Icons.Default.Computer,
+                    iconTint = Color(0xFF2979FF),
                     cta = Cta.Button(
                         "Download",
                         "https://github.com/adjorno/just-use-fucking-kotlin/releases",
@@ -95,25 +100,22 @@ object Content {
                     ),
                 ),
                 PlatformSection(
-                    id = "cli",
+                    id = Platform.CLI,
                     title = "CLI",
                     content = "For the terminal warriors. It's just a Kotlin app. Even a command line tool.",
                     icon = Icons.Default.Terminal,
+                    iconTint = Color(0xFFBDBDBD),
                     cta = Cta.Code(BREW_COMMAND),
                 ),
             )
 
             // Filter out competitor platforms: hide Android on iOS, hide iOS on Android
             return when (currentPlatform) {
-                Platform.IOS -> allSections.filter { it.id != "android" }
-                Platform.ANDROID -> allSections.filter { it.id != "ios" }
+                Platform.IOS -> allSections.filter { it.id != Platform.ANDROID }
+                Platform.ANDROID -> allSections.filter { it.id != Platform.IOS }
                 else -> allSections
             }
         }
-
-    const val MAKING_OF_HEADING = "How It Was Done"
-
-    fun buildVideoUrl(videoId: String): String = "https://www.youtube.com/watch?v=$videoId"
 
     const val FOOTER_AUTHOR = "@adjorno"
     val socialLinks = listOf(

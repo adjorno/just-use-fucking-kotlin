@@ -11,6 +11,7 @@ interface Platform {
         const val JS = "web/js"
         const val WASM = "web/wasm"
         const val DESKTOP = "desktop"
+        const val CLI = "cli"
     }
 }
 

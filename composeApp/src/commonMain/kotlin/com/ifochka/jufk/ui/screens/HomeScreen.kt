@@ -33,11 +33,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.ifochka.jufk.Platform
 import com.ifochka.jufk.data.Content
 import com.ifochka.jufk.data.InspirationLink
 import com.ifochka.jufk.data.PlatformSection
-import com.ifochka.jufk.getPlatform
 import com.ifochka.jufk.ui.components.HeroSection
 import com.ifochka.jufk.ui.components.PlatformSectionCard
 import com.ifochka.jufk.ui.theme.Dimensions
@@ -50,7 +48,6 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun HomeScreen(
     platformSections: List<PlatformSection>,
-    makingOfHeading: String,
     videos: List<YoutubeVideo>,
     isLoadingVideos: Boolean,
     inspirationText: String,
@@ -60,13 +57,6 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
-    val currentPlatform = when (getPlatform().name) {
-        Platform.ANDROID -> "android"
-        Platform.IOS -> "ios"
-        Platform.DESKTOP -> "desktop"
-        Platform.WASM, Platform.JS -> "web"
-        else -> ""
-    }
 
     Column(
         modifier = modifier
@@ -143,7 +133,10 @@ fun HomeScreen(
                                     PlatformSectionCard(
                                         section = section,
                                         onCodeCopy = onCodeCopy,
-                                        isCurrentPlatform = section.id.equals(currentPlatform, ignoreCase = true),
+                                        isCurrentPlatform = Content.currentPlatform.equals(
+                                            section.id,
+                                            ignoreCase = true,
+                                        ),
                                     )
                                 }
                             }
@@ -159,7 +152,7 @@ fun HomeScreen(
                         PlatformSectionCard(
                             section = section,
                             onCodeCopy = onCodeCopy,
-                            isCurrentPlatform = section.id.equals(currentPlatform, ignoreCase = true),
+                            isCurrentPlatform = Content.currentPlatform.equals(section.id, ignoreCase = true),
                         )
                     }
                 }

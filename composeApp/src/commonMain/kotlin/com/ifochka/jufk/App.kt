@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ifochka.jufk.ui.JufkTheme
 import com.ifochka.jufk.ui.components.Footer
 import com.ifochka.jufk.ui.screens.HomeScreen
@@ -30,7 +31,7 @@ fun App() {
     JufkTheme {
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
-        val viewModel = remember(scope) { HomeViewModel(scope) }
+        val viewModel = viewModel { HomeViewModel() }
 
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -60,7 +61,6 @@ fun App() {
                     ) { innerPadding ->
                         HomeScreen(
                             platformSections = viewModel.uiState.platformSections,
-                            makingOfHeading = viewModel.uiState.makingOfHeading,
                             videos = viewModel.uiState.videos,
                             isLoadingVideos = viewModel.uiState.isLoadingVideos,
                             inspirationText = viewModel.uiState.inspirationText,

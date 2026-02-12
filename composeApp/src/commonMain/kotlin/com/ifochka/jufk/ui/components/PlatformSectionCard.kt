@@ -54,15 +54,6 @@ fun PlatformSectionCard(
         SolidColor(colorScheme.onSurface.copy(alpha = 0.1f))
     }
 
-    val iconTint = when (section.id) {
-        "web" -> Color(0xFFD500F9) // Pink
-        "android" -> Color(0xFF00C853) // Green
-        "ios" -> Color.White
-        "desktop" -> Color(0xFF2979FF) // Blue
-        "cli" -> Color(0xFFBDBDBD) // Grey
-        else -> colorScheme.onSurface.copy(alpha = 0.8f)
-    }
-
     Box(contentAlignment = Alignment.TopEnd) {
         Column(
             modifier = modifier
@@ -81,7 +72,7 @@ fun PlatformSectionCard(
                 Icon(
                     imageVector = section.icon,
                     contentDescription = section.title,
-                    tint = iconTint,
+                    tint = section.iconTint,
                     modifier = Modifier.size(24.dp),
                 )
                 Text(
