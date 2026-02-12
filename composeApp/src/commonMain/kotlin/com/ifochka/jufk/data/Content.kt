@@ -20,10 +20,10 @@ object Content {
     val isMobilePlatform = currentPlatform in listOf(Platform.IOS, Platform.ANDROID)
 
     // Platform icon colors
-    private val COLOR_WEB = Color(0xFFD500F9)      // Pink/Magenta
-    private val COLOR_ANDROID = Color(0xFF00C853)  // Green
-    private val COLOR_DESKTOP = Color(0xFF2979FF)  // Blue
-    private val COLOR_CLI = Color(0xFFBDBDBD)      // Grey
+    private val COLOR_WEB = Color(0xFFD500F9) // Pink/Magenta
+    private val COLOR_ANDROID = Color(0xFF00C853) // Green
+    private val COLOR_DESKTOP = Color(0xFF2979FF) // Blue
+    private val COLOR_CLI = Color(0xFFBDBDBD) // Grey
 
     fun getPlatformAdjective(): String =
         when {
