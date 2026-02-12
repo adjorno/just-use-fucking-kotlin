@@ -72,7 +72,7 @@ object Content {
                     icon = Icons.Default.Android,
                     cta = Cta.Button(
                         text = "Get it on Google Play",
-                        url = "https://play.google.com/store/apps/details?id=com.ifochka.jufk",
+                        url = "https://play.google.com/apps/testing/com.ifochka.jufk",
                         icon = null,
                     ),
                 ),
@@ -83,7 +83,7 @@ object Content {
                     icon = Icons.Default.Devices,
                     cta = Cta.Button(
                         "App Store",
-                        "https://apps.apple.com/us/app/jufk/id6757016615",
+                        "https://testflight.apple.com/join/sENnMKjM",
                         Icons.Default.Download,
                     ),
                 ),
