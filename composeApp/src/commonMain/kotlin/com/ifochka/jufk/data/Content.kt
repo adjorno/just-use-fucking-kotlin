@@ -19,6 +19,12 @@ object Content {
     val currentPlatform = getPlatform().name
     val isMobilePlatform = currentPlatform in listOf(Platform.IOS, Platform.ANDROID)
 
+    // Platform icon colors
+    private val COLOR_WEB = Color(0xFFD500F9)      // Pink/Magenta
+    private val COLOR_ANDROID = Color(0xFF00C853)  // Green
+    private val COLOR_DESKTOP = Color(0xFF2979FF)  // Blue
+    private val COLOR_CLI = Color(0xFFBDBDBD)      // Grey
+
     fun getPlatformAdjective(): String =
         when {
             isMobilePlatform -> "Lovely"
@@ -57,7 +63,7 @@ object Content {
                     title = "Web/WASM",
                     content = "Build fast Web UIs. Compiled from the same Kotlin codebase. Seriously performant.",
                     icon = Icons.Default.Language,
-                    iconTint = Color(0xFFD500F9),
+                    iconTint = COLOR_WEB,
                     cta = Cta.Link(
                         text = if (isMobilePlatform) "(with the site)" else "justusefuckingkotlin.com",
                         url = WEBSITE_URL,
@@ -68,7 +74,7 @@ object Content {
                     title = "Android",
                     content = "Kotlin's native platform. Android Studio loves it. Your users will too.",
                     icon = Icons.Default.Android,
-                    iconTint = Color(0xFF00C853),
+                    iconTint = COLOR_ANDROID,
                     cta = Cta.Button(
                         text = "Get it on Google Play",
                         url = "https://play.google.com/apps/internaltest/4701355457155312910",
@@ -92,7 +98,7 @@ object Content {
                     title = "Desktop",
                     content = "One codebase. Your desktop app that no one asked for.",
                     icon = Icons.Default.Computer,
-                    iconTint = Color(0xFF2979FF),
+                    iconTint = COLOR_DESKTOP,
                     cta = Cta.Button(
                         "Download",
                         "https://github.com/adjorno/just-use-fucking-kotlin/releases",
@@ -104,7 +110,7 @@ object Content {
                     title = "CLI",
                     content = "For the terminal warriors. It's just a Kotlin app. Even a command line tool.",
                     icon = Icons.Default.Terminal,
-                    iconTint = Color(0xFFBDBDBD),
+                    iconTint = COLOR_CLI,
                     cta = Cta.Code(BREW_COMMAND),
                 ),
             )
