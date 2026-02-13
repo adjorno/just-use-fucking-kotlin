@@ -5,7 +5,6 @@ import com.ifochka.jufk.youtube.toWidgetModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.darwin.Darwin
 import io.ktor.client.request.get
-import io.ktor.client.statement.readBytes
 import io.ktor.client.statement.readRawBytes
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
