@@ -38,9 +38,11 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.ifochka.jufk.HapticStyle
+import com.ifochka.jufk.Platform
 import com.ifochka.jufk.data.Content
 import com.ifochka.jufk.data.InspirationLink
 import com.ifochka.jufk.data.PlatformSection
+import com.ifochka.jufk.getPlatform
 import com.ifochka.jufk.shareContent
 import com.ifochka.jufk.triggerHaptic
 import com.ifochka.jufk.ui.components.HeroSection
@@ -126,10 +128,18 @@ fun HomeScreen(
 
                 // Share App button only visible on mobile
                 if (isMobile) {
+                    val currentPlatform = getPlatform().name
+                    val appUrl = when (currentPlatform) {
+                        Platform.IOS -> Content.IOS_APP_URL
+                        Platform.ANDROID -> Content.ANDROID_APP_URL
+                        else -> Content.WEBSITE_URL
+                    }
+                    val shareTitle = "Just Use Fucking Kotlin - One codebase, 5 platforms"
+
                     OutlinedButton(
                         onClick = {
                             triggerHaptic(HapticStyle.LIGHT)
-                            shareContent("https://justusefuckingkotlin.com", "Just Use Fucking Kotlin - One codebase, 5 platforms")
+                            shareContent(appUrl, shareTitle)
                         },
                         shape = RoundedCornerShape(8.dp),
                     ) {

@@ -52,6 +52,8 @@ object Content {
 
     const val GITHUB_URL = "https://github.com/adjorno/just-use-fucking-kotlin"
     const val WEBSITE_URL = "https://justusefuckingkotlin.com"
+    const val IOS_APP_URL = "https://testflight.apple.com/join/sENnMKjM"
+    const val ANDROID_APP_URL = "https://play.google.com/apps/testing/com.ifochka.jufk"
 
     const val YOUTUBE_PLAYLIST_ID = "PLGS6AZIpM4eHR6EWt6IZ8HeizdP8SOCxU"
 
@@ -77,7 +79,7 @@ object Content {
                     iconTint = COLOR_ANDROID,
                     cta = Cta.Button(
                         text = "Get it on Google Play",
-                        url = "https://play.google.com/apps/internaltest/4701355457155312910",
+                        url = ANDROID_APP_URL,
                         icon = null,
                     ),
                 ),
@@ -89,7 +91,7 @@ object Content {
                     iconTint = Color.White,
                     cta = Cta.Button(
                         "App Store",
-                        "https://testflight.apple.com/join/sENnMKjM",
+                        IOS_APP_URL,
                         Icons.Default.Download,
                     ),
                 ),
