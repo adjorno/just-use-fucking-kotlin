@@ -10,3 +10,12 @@ class JsPlatform : Platform {
 actual fun getPlatform(): Platform = JsPlatform()
 
 actual fun createHttpClient(): HttpClient = HttpClient(Js)
+
+actual fun shareContent(url: String, title: String) {
+    // TODO: Implement Web Share API
+    println("Share on Web: $title - $url")
+}
+
+actual fun triggerHaptic(style: HapticStyle) {
+    // No haptic feedback on web
+}

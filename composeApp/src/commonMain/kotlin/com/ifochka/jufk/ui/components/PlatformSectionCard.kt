@@ -33,8 +33,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ifochka.jufk.HapticStyle
 import com.ifochka.jufk.data.Cta
 import com.ifochka.jufk.data.PlatformSection
+import com.ifochka.jufk.triggerHaptic
 
 @Composable
 fun PlatformSectionCard(
@@ -99,12 +101,18 @@ fun PlatformSectionCard(
                         text = cta.text,
                         style = typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                         color = colorScheme.primary,
-                        modifier = Modifier.clickable { uriHandler.openUri(cta.url) },
+                        modifier = Modifier.clickable {
+                            triggerHaptic(HapticStyle.LIGHT)
+                            uriHandler.openUri(cta.url)
+                        },
                     )
                 }
                 is Cta.Button -> {
                     Button(
-                        onClick = { uriHandler.openUri(cta.url) },
+                        onClick = {
+                            triggerHaptic(HapticStyle.LIGHT)
+                            uriHandler.openUri(cta.url)
+                        },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorScheme.surfaceVariant,
@@ -119,6 +127,7 @@ fun PlatformSectionCard(
                 }
                 is Cta.Code -> {
                     CodeBlock(code = cta.code, onCopy = {
+                        triggerHaptic(HapticStyle.SUCCESS)
                         clipboardManager.setText(AnnotatedString(it))
                         onCodeCopy(it)
                     })

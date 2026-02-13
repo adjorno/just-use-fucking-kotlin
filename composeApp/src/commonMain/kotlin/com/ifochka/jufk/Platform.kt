@@ -18,3 +18,16 @@ interface Platform {
 expect fun getPlatform(): Platform
 
 expect fun createHttpClient(): HttpClient
+
+enum class HapticStyle {
+    LIGHT,
+    MEDIUM,
+    HEAVY,
+    SUCCESS,
+    WARNING,
+    ERROR
+}
+
+expect fun shareContent(url: String, title: String)
+
+expect fun triggerHaptic(style: HapticStyle = HapticStyle.LIGHT)
