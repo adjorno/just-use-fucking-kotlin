@@ -49,8 +49,7 @@ platform :ios do
       export_method: "app-store",
       xcargs: [
           "DEVELOPMENT_TEAM=#{signing_settings[:team_id]}",
-          "CODE_SIGN_STYLE=Manual",
-          "CODE_SIGN_IDENTITY='#{signing_settings[:identity]}'",
+          "CODE_SIGN_STYLE=Automatic",
           "MARKETING_VERSION=#{sanitized_version}",
           "CURRENT_PROJECT_VERSION=#{build_number}"
         ].join(" "),
