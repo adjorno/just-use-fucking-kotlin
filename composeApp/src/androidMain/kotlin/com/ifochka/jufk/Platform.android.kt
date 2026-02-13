@@ -12,7 +12,10 @@ actual fun getPlatform(): Platform = AndroidPlatform()
 
 actual fun createHttpClient(): HttpClient = HttpClient(OkHttp)
 
-actual fun shareContent(url: String, title: String) {
+actual fun shareContent(
+    url: String,
+    title: String,
+) {
     // TODO: Implement Android share intent
     println("Share on Android: $title - $url")
 }

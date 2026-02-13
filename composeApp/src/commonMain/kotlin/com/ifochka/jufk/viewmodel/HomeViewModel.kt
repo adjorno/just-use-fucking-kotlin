@@ -9,11 +9,11 @@ import com.ifochka.jufk.BuildKonfig
 import com.ifochka.jufk.Platform
 import com.ifochka.jufk.createHttpClient
 import com.ifochka.jufk.data.Content
-import com.ifochka.jufk.getPlatform
-import com.ifochka.jufk.saveVideosForWidget
 import com.ifochka.jufk.data.InspirationLink
 import com.ifochka.jufk.data.PlatformSection
 import com.ifochka.jufk.data.SocialLink
+import com.ifochka.jufk.getPlatform
+import com.ifochka.jufk.saveVideosForWidget
 import com.ifochka.jufk.youtube.YoutubeVideo
 import com.ifochka.jufk.youtube.YoutubeVideoDataSourceFromApi
 import kotlinx.coroutines.launch

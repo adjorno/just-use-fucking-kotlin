@@ -26,10 +26,13 @@ enum class HapticStyle {
     HEAVY,
     SUCCESS,
     WARNING,
-    ERROR
+    ERROR,
 }
 
-expect fun shareContent(url: String, title: String)
+expect fun shareContent(
+    url: String,
+    title: String,
+)
 
 expect fun triggerHaptic(style: HapticStyle = HapticStyle.LIGHT)
 

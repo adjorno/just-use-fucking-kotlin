@@ -10,10 +10,19 @@ import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import platform.Foundation.*
-import platform.UIKit.*
+import platform.Foundation.NSData
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSURL
+import platform.Foundation.NSUserDefaults
+import platform.Foundation.create
+import platform.Foundation.writeToFile
+import platform.UIKit.UIActivityViewController
+import platform.UIKit.UIApplication
+import platform.UIKit.UIImpactFeedbackGenerator
+import platform.UIKit.UIImpactFeedbackStyle
+import platform.UIKit.UINotificationFeedbackGenerator
+import platform.UIKit.UINotificationFeedbackType
 
 class IOSPlatform : Platform {
     override val name: String = Platform.IOS
@@ -23,17 +32,20 @@ actual fun getPlatform(): Platform = IOSPlatform()
 
 actual fun createHttpClient(): HttpClient = HttpClient(Darwin)
 
-actual fun shareContent(url: String, title: String) {
+actual fun shareContent(
+    url: String,
+    title: String,
+) {
     val currentViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
     val activityItems = listOf(title, NSURL.URLWithString(url))
     val activityViewController = UIActivityViewController(
         activityItems = activityItems,
-        applicationActivities = null
+        applicationActivities = null,
     )
     currentViewController?.presentViewController(
         activityViewController,
         animated = true,
-        completion = null
+        completion = null,
     )
 }
 
@@ -82,11 +94,6 @@ actual suspend fun saveVideosForWidget(videos: List<YoutubeVideo>) {
 
     // Use proper App Groups initialization
     val sharedDefaults = NSUserDefaults(suiteName = "group.com.ifochka.jufk.widgets")
-
-    if (sharedDefaults == null) {
-        println("❌ Failed to create NSUserDefaults with App Groups suite")
-        return
-    }
 
     // Get App Groups shared container URL
     val fileManager = NSFileManager.defaultManager
@@ -154,8 +161,7 @@ actual suspend fun saveVideosForWidget(videos: List<YoutubeVideo>) {
 
 // Helper to convert ByteArray to NSData
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
-private fun ByteArray.toNSData(): NSData {
-    return this.usePinned { pinned ->
+private fun ByteArray.toNSData(): NSData =
+    this.usePinned { pinned ->
         NSData.create(bytes = pinned.addressOf(0), length = this.size.toULong())
     }
-}

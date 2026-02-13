@@ -12,7 +12,10 @@ actual fun getPlatform(): Platform = JsPlatform()
 
 actual fun createHttpClient(): HttpClient = HttpClient(Js)
 
-actual fun shareContent(url: String, title: String) {
+actual fun shareContent(
+    url: String,
+    title: String,
+) {
     // TODO: Implement Web Share API
     println("Share on Web: $title - $url")
 }

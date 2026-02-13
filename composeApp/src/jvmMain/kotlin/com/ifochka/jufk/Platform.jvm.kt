@@ -12,7 +12,10 @@ actual fun getPlatform(): Platform = JVMPlatform()
 
 actual fun createHttpClient(): HttpClient = HttpClient(CIO)
 
-actual fun shareContent(url: String, title: String) {
+actual fun shareContent(
+    url: String,
+    title: String,
+) {
     // Desktop: Could open default browser or clipboard
     println("Share on Desktop: $title - $url")
 }

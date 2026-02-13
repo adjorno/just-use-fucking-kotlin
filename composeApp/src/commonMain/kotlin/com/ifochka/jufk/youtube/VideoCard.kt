@@ -76,13 +76,13 @@ fun VideoCard(video: YoutubeVideo) {
                     .padding(8.dp)
                     .background(
                         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                        shape = CircleShape
-                    )
+                        shape = CircleShape,
+                    ),
             ) {
                 Icon(
                     imageVector = Icons.Default.Share,
                     contentDescription = "Share video",
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }
