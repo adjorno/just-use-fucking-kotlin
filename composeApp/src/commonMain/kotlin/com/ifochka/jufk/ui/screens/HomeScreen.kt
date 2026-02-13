@@ -16,9 +16,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,9 +37,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.ifochka.jufk.HapticStyle
+import com.ifochka.jufk.Platform
 import com.ifochka.jufk.data.Content
 import com.ifochka.jufk.data.InspirationLink
 import com.ifochka.jufk.data.PlatformSection
+import com.ifochka.jufk.getPlatform
+import com.ifochka.jufk.shareContent
+import com.ifochka.jufk.triggerHaptic
 import com.ifochka.jufk.ui.components.HeroSection
 import com.ifochka.jufk.ui.components.PlatformSectionCard
 import com.ifochka.jufk.ui.theme.Dimensions
@@ -93,21 +102,57 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Button(
-            onClick = { uriHandler.openUri(Content.GITHUB_URL) },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface,
-            ),
-            shape = RoundedCornerShape(8.dp),
-        ) {
-            Image(
-                painter = painterResource(Res.drawable.icon_github),
-                contentDescription = "GitHub",
-                modifier = Modifier.size(20.dp),
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("View on GitHub")
+        BoxWithConstraints {
+            val isMobile = maxWidth < 800.dp
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Button(
+                    onClick = { uriHandler.openUri(Content.GITHUB_URL) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.icon_github),
+                        contentDescription = "GitHub",
+                        modifier = Modifier.size(20.dp),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("View on GitHub")
+                }
+
+                // Share App button only visible on mobile
+                if (isMobile) {
+                    val currentPlatform = getPlatform().name
+                    val appUrl = when (currentPlatform) {
+                        Platform.IOS -> Content.IOS_APP_URL
+                        Platform.ANDROID -> Content.ANDROID_APP_URL
+                        else -> Content.WEBSITE_URL
+                    }
+                    val shareTitle = "Just Use Fucking Kotlin - One codebase, 5 platforms"
+
+                    OutlinedButton(
+                        onClick = {
+                            triggerHaptic(HapticStyle.LIGHT)
+                            shareContent(appUrl, shareTitle)
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Share",
+                            modifier = Modifier.size(20.dp),
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Share App")
+                    }
+                }
+            }
         }
 
         Text(

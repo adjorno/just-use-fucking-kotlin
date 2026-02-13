@@ -37,8 +37,29 @@ platform :ios do
     signing_settings = {
       team_id: ENV.fetch('DEVELOPMENT_TEAM'),
       profile: ENV.fetch("PROVISIONING_PROFILE_SPECIFIER"),
+      profile_widget: ENV.fetch("PROVISIONING_PROFILE_SPECIFIER_WIDGET"),
       identity: "Apple Distribution"
     }
+
+    # Configure code signing for main app target
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      team_id: signing_settings[:team_id],
+      targets: ["iosApp"],
+      profile_name: signing_settings[:profile],
+      code_sign_identity: signing_settings[:identity],
+      path: "iosApp/iosApp.xcodeproj"
+    )
+
+    # Configure code signing for widget extension target
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      team_id: signing_settings[:team_id],
+      targets: ["JUFKWidgetExtension"],
+      profile_name: signing_settings[:profile_widget],
+      code_sign_identity: signing_settings[:identity],
+      path: "iosApp/iosApp.xcodeproj"
+    )
 
     build_app(
       project: "iosApp/iosApp.xcodeproj",
@@ -49,15 +70,16 @@ platform :ios do
       xcargs: [
           "DEVELOPMENT_TEAM=#{signing_settings[:team_id]}",
           "CODE_SIGN_STYLE=Manual",
-          "CODE_SIGN_IDENTITY='#{signing_settings[:identity]}'",
-          "PROVISIONING_PROFILE_SPECIFIER='#{signing_settings[:profile]}'",
           "MARKETING_VERSION=#{sanitized_version}",
           "CURRENT_PROJECT_VERSION=#{build_number}"
         ].join(" "),
       export_options: {
         signingStyle: "manual",
         provisioningProfiles: {
-          CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier) => signing_settings[:profile]
+          # Main app
+          "com.ifochka.jufk" => signing_settings[:profile],
+          # Widget extension (uses separate profile if specified, otherwise falls back to main profile)
+          "com.ifochka.jufk.JUFKWidget" => signing_settings[:profile_widget]
         }
       }
     )

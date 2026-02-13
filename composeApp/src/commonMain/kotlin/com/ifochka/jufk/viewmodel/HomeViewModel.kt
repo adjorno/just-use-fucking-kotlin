@@ -6,11 +6,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ifochka.jufk.BuildKonfig
+import com.ifochka.jufk.Platform
 import com.ifochka.jufk.createHttpClient
 import com.ifochka.jufk.data.Content
 import com.ifochka.jufk.data.InspirationLink
 import com.ifochka.jufk.data.PlatformSection
 import com.ifochka.jufk.data.SocialLink
+import com.ifochka.jufk.getPlatform
+import com.ifochka.jufk.saveVideosForWidget
 import com.ifochka.jufk.youtube.YoutubeVideo
 import com.ifochka.jufk.youtube.YoutubeVideoDataSourceFromApi
 import kotlinx.coroutines.launch
@@ -55,6 +58,11 @@ class HomeViewModel : ViewModel() {
                 videos = videos,
                 isLoadingVideos = false,
             )
+
+            // Save for widget (iOS only)
+            if (getPlatform().name == Platform.IOS) {
+                saveVideosForWidget(videos)
+            }
         }
     }
 }
