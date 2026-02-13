@@ -130,7 +130,7 @@ struct SingleVideoView: View {
     let video: YoutubeVideoWidget
 
     var body: some View {
-        Link(destination: URL(string: video.url)!) {
+        Link(destination: youtubeURL(for: video)) {
             ZStack {
                 // Thumbnail with proper aspect ratio
                 GeometryReader { geometry in
@@ -199,8 +199,8 @@ struct MediumVideoItem: View {
     let video: YoutubeVideoWidget
 
     var body: some View {
-        Link(destination: URL(string: video.url)!) {
-            VStack(spacing: 4) {
+        Link(destination: youtubeURL(for: video)) {
+            VStack(alignment: .leading, spacing: 4) {
                 // Thumbnail with 16:9 aspect ratio
                 ZStack {
                     if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.ifochka.jufk.widgets") {
@@ -234,12 +234,12 @@ struct MediumVideoItem: View {
                         .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                 }
                 
-                // Title with more space
+                // Title with flexible height
                 Text(video.title)
                     .font(.system(.caption2, design: .default, weight: .medium))
                     .lineLimit(3)
                     .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     .foregroundColor(.primary)
             }
         }
@@ -252,8 +252,8 @@ struct LargeVideoItem: View {
     let video: YoutubeVideoWidget
 
     var body: some View {
-        Link(destination: URL(string: video.url)!) {
-            HStack(spacing: 12) {
+        Link(destination: youtubeURL(for: video)) {
+            HStack(alignment: .center, spacing: 12) {
                 // Thumbnail
                 ZStack {
                     if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.ifochka.jufk.widgets") {
@@ -288,14 +288,14 @@ struct LargeVideoItem: View {
                         .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                 }
                 
-                // Title and description area
-                VStack(alignment: .leading, spacing: 4) {
+                // Title area - centered vertically
+                VStack(alignment: .leading, spacing: 0) {
+                    Spacer()
                     Text(video.title)
                         .font(.system(.caption, design: .default, weight: .medium))
                         .lineLimit(4)
                         .multilineTextAlignment(.leading)
                         .foregroundColor(.primary)
-                    
                     Spacer()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -309,6 +309,15 @@ struct LargeVideoItem: View {
         }
         .buttonStyle(PlainButtonStyle())
     }
+}
+
+// Helper function to create optimized YouTube URLs
+func youtubeURL(for video: YoutubeVideoWidget) -> URL {
+    // Extract video ID from the YouTube URL
+    let videoId = video.videoId
+    
+    // Use YouTube app URL scheme - iOS will automatically fall back to Safari if YouTube app isn't installed
+    return URL(string: "youtube://www.youtube.com/watch?v=\(videoId)") ?? URL(string: video.url)!
 }
 
 // Helper function for phase description
