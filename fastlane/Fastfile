@@ -41,6 +41,26 @@ platform :ios do
       identity: "Apple Distribution"
     }
 
+    # Configure code signing for main app target
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      team_id: signing_settings[:team_id],
+      targets: ["iosApp"],
+      profile_name: signing_settings[:profile],
+      code_sign_identity: signing_settings[:identity],
+      path: "iosApp/iosApp.xcodeproj"
+    )
+
+    # Configure code signing for widget extension target
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      team_id: signing_settings[:team_id],
+      targets: ["JUFKWidgetExtension"],
+      profile_name: signing_settings[:profile_widget],
+      code_sign_identity: signing_settings[:identity],
+      path: "iosApp/iosApp.xcodeproj"
+    )
+
     build_app(
       project: "iosApp/iosApp.xcodeproj",
       scheme: "iosApp",
@@ -49,7 +69,7 @@ platform :ios do
       export_method: "app-store",
       xcargs: [
           "DEVELOPMENT_TEAM=#{signing_settings[:team_id]}",
-          "CODE_SIGN_STYLE=Automatic",
+          "CODE_SIGN_STYLE=Manual",
           "MARKETING_VERSION=#{sanitized_version}",
           "CURRENT_PROJECT_VERSION=#{build_number}"
         ].join(" "),
