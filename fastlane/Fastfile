@@ -57,7 +57,9 @@ platform :ios do
       export_options: {
         signingStyle: "manual",
         provisioningProfiles: {
-          CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier) => signing_settings[:profile]
+          # Main app and widget extension use the same provisioning profile
+          "com.ifochka.jufk" => signing_settings[:profile],
+          "com.ifochka.jufk.JUFKWidget" => signing_settings[:profile]
         }
       }
     )
