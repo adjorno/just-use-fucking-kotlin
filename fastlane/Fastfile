@@ -37,6 +37,7 @@ platform :ios do
     signing_settings = {
       team_id: ENV.fetch('DEVELOPMENT_TEAM'),
       profile: ENV.fetch("PROVISIONING_PROFILE_SPECIFIER"),
+      profile_widget: ENV.fetch("PROVISIONING_PROFILE_SPECIFIER_WIDGET"),
       identity: "Apple Distribution"
     }
 
@@ -50,16 +51,16 @@ platform :ios do
           "DEVELOPMENT_TEAM=#{signing_settings[:team_id]}",
           "CODE_SIGN_STYLE=Manual",
           "CODE_SIGN_IDENTITY='#{signing_settings[:identity]}'",
-          "PROVISIONING_PROFILE_SPECIFIER='#{signing_settings[:profile]}'",
           "MARKETING_VERSION=#{sanitized_version}",
           "CURRENT_PROJECT_VERSION=#{build_number}"
         ].join(" "),
       export_options: {
         signingStyle: "manual",
         provisioningProfiles: {
-          # Main app and widget extension use the same provisioning profile
+          # Main app
           "com.ifochka.jufk" => signing_settings[:profile],
-          "com.ifochka.jufk.JUFKWidget" => signing_settings[:profile]
+          # Widget extension (uses separate profile if specified, otherwise falls back to main profile)
+          "com.ifochka.jufk.JUFKWidget" => signing_settings[:profile_widget]
         }
       }
     )
