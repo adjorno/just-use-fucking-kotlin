@@ -73,9 +73,20 @@ actual fun triggerHaptic(style: HapticStyle) {
 }
 
 actual fun saveVideosForWidget(videos: List<YoutubeVideo>) {
-    val sharedDefaults = NSUserDefaults(suiteName = "group.com.ifochka.jufk.widgets")
+    println("📱 Saving ${videos.size} videos for widget")
+
+    // Use the constructor instead of deprecated initWithSuiteName
+    val sharedDefaults = NSUserDefaults("group.com.ifochka.jufk.widgets")
+
     val widgetVideos = videos.take(4).map { it.toWidgetModel() }
     val json = Json.encodeToString(widgetVideos)
-    sharedDefaults.setObject(json, forKey = "youtubeVideos")
-    sharedDefaults.synchronize()
+    println("📱 JSON: $json")
+
+    sharedDefaults.setObject(json as Any, forKey = "youtubeVideos")
+    val synced = sharedDefaults.synchronize()
+    println("📱 Synchronize result: $synced")
+
+    // Verify it was saved
+    val readBack = sharedDefaults.stringForKey("youtubeVideos")
+    println("📱 Read back: ${readBack?.take(100)}")
 }
