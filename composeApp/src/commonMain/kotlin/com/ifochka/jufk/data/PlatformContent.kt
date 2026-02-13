@@ -27,22 +27,7 @@ data class PlatformSection(
     val icon: ImageVector,
     val iconTint: Color,
     val cta: Cta,
-    val isHighlighted: Boolean = false,
-)
-
-data class Video(
-    val id: String,
-    val title: String,
-    val url: String,
-    val thumbnailUrl: String?,
-)
-
-data class GoodnessLink(
-    val id: String,
-    val title: String,
-    val subtitle: String,
-    val url: String,
-    val icon: ImageVector,
+    val isHighlighted: Boolean,
 )
 
 data class InspirationLink(

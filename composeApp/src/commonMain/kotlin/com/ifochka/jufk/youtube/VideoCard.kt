@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ifochka.jufk.HapticStyle
+import com.ifochka.jufk.data.Content
 import com.ifochka.jufk.shareContent
 import com.ifochka.jufk.triggerHaptic
 import io.kamel.image.KamelImage
@@ -65,25 +66,26 @@ fun VideoCard(video: YoutubeVideo) {
                 modifier = Modifier.size(48.dp),
             )
 
-            // Share button in top-right corner
-            IconButton(
-                onClick = {
-                    triggerHaptic(HapticStyle.LIGHT)
-                    shareContent(video.url, video.title)
-                },
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
-                        shape = CircleShape,
-                    ),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Share,
-                    contentDescription = "Share video",
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
+            if (Content.isMobilePlatform) {
+                IconButton(
+                    onClick = {
+                        triggerHaptic(HapticStyle.LIGHT)
+                        shareContent(video.url, video.title)
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                            shape = CircleShape,
+                        ),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = "Share video",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
             }
         }
 

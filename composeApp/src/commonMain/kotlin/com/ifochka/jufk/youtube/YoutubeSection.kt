@@ -57,6 +57,7 @@ fun YoutubeSection(
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
                             videos.chunked(cardFitInARow).forEach { rowVideos ->
                                 Row(

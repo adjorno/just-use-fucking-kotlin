@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,13 +43,12 @@ import com.ifochka.jufk.triggerHaptic
 fun PlatformSectionCard(
     section: PlatformSection,
     onCodeCopy: (String) -> Unit,
-    isCurrentPlatform: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
     val clipboardManager = LocalClipboardManager.current
 
-    val borderBrush = if (section.isHighlighted || isCurrentPlatform) {
+    val borderBrush = if (section.isHighlighted) {
         Brush.verticalGradient(
             colors = listOf(colorScheme.primary, colorScheme.secondary),
         )
@@ -60,6 +60,7 @@ fun PlatformSectionCard(
         Column(
             modifier = modifier
                 .fillMaxWidth()
+                .heightIn(min = 188.dp)
                 .border(
                     width = 1.dp,
                     brush = borderBrush,
@@ -107,6 +108,7 @@ fun PlatformSectionCard(
                         },
                     )
                 }
+
                 is Cta.Button -> {
                     Button(
                         onClick = {
@@ -125,6 +127,7 @@ fun PlatformSectionCard(
                         Text(cta.text, modifier = Modifier.padding(start = 8.dp))
                     }
                 }
+
                 is Cta.Code -> {
                     CodeBlock(code = cta.code, onCopy = {
                         triggerHaptic(HapticStyle.SUCCESS)
@@ -135,7 +138,7 @@ fun PlatformSectionCard(
             }
         }
 
-        if (isCurrentPlatform) {
+        if (section.isHighlighted) {
             YouAreHereBadge(modifier = Modifier.offset(x = (-12).dp, y = (-12).dp))
         }
     }
