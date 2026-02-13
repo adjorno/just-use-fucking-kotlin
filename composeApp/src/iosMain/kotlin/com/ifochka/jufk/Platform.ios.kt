@@ -6,6 +6,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.darwin.Darwin
 import io.ktor.client.request.get
 import io.ktor.client.statement.readBytes
+import io.ktor.client.statement.readRawBytes
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
@@ -121,7 +122,7 @@ actual suspend fun saveVideosForWidget(videos: List<YoutubeVideo>) {
 
             try {
                 // Download image asynchronously using Ktor
-                val imageBytes = httpClient.get(urlString).readBytes()
+                val imageBytes = httpClient.get(urlString).readRawBytes()
                 val imageData = imageBytes.toNSData()
 
                 val saved = imageData.writeToFile(imagePath, atomically = true)
