@@ -70,6 +70,7 @@ object Content {
                         text = if (isMobilePlatform) "(with the site)" else "justusefuckingkotlin.com",
                         url = WEBSITE_URL,
                     ),
+                    isHighlighted = currentPlatform == Platform.WASM,
                 ),
                 PlatformSection(
                     id = Platform.ANDROID,
@@ -82,6 +83,7 @@ object Content {
                         url = ANDROID_APP_URL,
                         icon = null,
                     ),
+                    isHighlighted = currentPlatform == Platform.ANDROID,
                 ),
                 PlatformSection(
                     id = Platform.IOS,
@@ -94,6 +96,7 @@ object Content {
                         IOS_APP_URL,
                         Icons.Default.Download,
                     ),
+                    isHighlighted = currentPlatform == Platform.IOS,
                 ),
                 PlatformSection(
                     id = Platform.DESKTOP,
@@ -106,6 +109,7 @@ object Content {
                         "https://github.com/adjorno/just-use-fucking-kotlin/releases",
                         Icons.Default.Download,
                     ),
+                    isHighlighted = currentPlatform == Platform.DESKTOP,
                 ),
                 PlatformSection(
                     id = Platform.CLI,
@@ -114,6 +118,7 @@ object Content {
                     icon = Icons.Default.Terminal,
                     iconTint = COLOR_CLI,
                     cta = Cta.Code(BREW_COMMAND),
+                    isHighlighted = currentPlatform == Platform.CLI,
                 ),
             )
 

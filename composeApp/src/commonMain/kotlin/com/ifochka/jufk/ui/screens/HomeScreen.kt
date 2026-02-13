@@ -178,10 +178,6 @@ fun HomeScreen(
                                     PlatformSectionCard(
                                         section = section,
                                         onCodeCopy = onCodeCopy,
-                                        isCurrentPlatform = Content.currentPlatform.equals(
-                                            section.id,
-                                            ignoreCase = true,
-                                        ),
                                     )
                                 }
                             }
@@ -197,7 +193,6 @@ fun HomeScreen(
                         PlatformSectionCard(
                             section = section,
                             onCodeCopy = onCodeCopy,
-                            isCurrentPlatform = Content.currentPlatform.equals(section.id, ignoreCase = true),
                         )
                     }
                 }
