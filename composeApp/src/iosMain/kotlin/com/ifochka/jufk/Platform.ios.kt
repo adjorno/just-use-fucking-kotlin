@@ -4,10 +4,15 @@ import com.ifochka.jufk.youtube.YoutubeVideo
 import com.ifochka.jufk.youtube.toWidgetModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.darwin.Darwin
+import io.ktor.client.request.get
+import io.ktor.client.statement.readBytes
+import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import platform.Foundation.NSUserDefaults
-import platform.Foundation.NSURL
+import platform.Foundation.*
 import platform.UIKit.*
 
 class IOSPlatform : Platform {
@@ -72,21 +77,85 @@ actual fun triggerHaptic(style: HapticStyle) {
     }
 }
 
-actual fun saveVideosForWidget(videos: List<YoutubeVideo>) {
+actual suspend fun saveVideosForWidget(videos: List<YoutubeVideo>) {
     println("📱 Saving ${videos.size} videos for widget")
 
-    // Use the constructor instead of deprecated initWithSuiteName
-    val sharedDefaults = NSUserDefaults("group.com.ifochka.jufk.widgets")
+    // Use proper App Groups initialization
+    val sharedDefaults = NSUserDefaults(suiteName = "group.com.ifochka.jufk.widgets")
 
-    val widgetVideos = videos.take(4).map { it.toWidgetModel() }
-    val json = Json.encodeToString(widgetVideos)
-    println("📱 JSON: $json")
+    if (sharedDefaults == null) {
+        println("❌ Failed to create NSUserDefaults with App Groups suite")
+        return
+    }
 
+    // Get App Groups shared container URL
+    val fileManager = NSFileManager.defaultManager
+    val containerURL = fileManager.containerURLForSecurityApplicationGroupIdentifier("group.com.ifochka.jufk.widgets")
+
+    if (containerURL == null) {
+        println("❌ Failed to get App Groups container URL")
+        return
+    }
+
+    // Take the last 4 videos (most recent) and reverse to show newest first
+    val widgetVideos = videos.takeLast(4).reversed()
+
+    println("📱 Downloading ${widgetVideos.size} thumbnails asynchronously...")
+
+    // Create HTTP client for downloading images
+    val httpClient = createHttpClient()
+
+    // Download and save thumbnail images asynchronously
+    widgetVideos.forEach { video ->
+        video.thumbnailUrl?.let { urlString ->
+            val videoId = video.url.substringAfter("v=").substringBefore("&")
+            val imageFileName = "$videoId.jpg"
+            val imagePath = containerURL.path + "/" + imageFileName
+
+            try {
+                // Download image asynchronously using Ktor
+                val imageBytes = httpClient.get(urlString).readBytes()
+                val imageData = imageBytes.toNSData()
+
+                val saved = imageData.writeToFile(imagePath, atomically = true)
+                if (saved) {
+                    println("📱 ✓ Saved thumbnail: $imageFileName")
+                } else {
+                    println("❌ Failed to save thumbnail: $imageFileName")
+                }
+            } catch (e: Exception) {
+                println("❌ Failed to download thumbnail from: $urlString - ${e.message}")
+            }
+        }
+    }
+
+    // Save video data with local image paths
+    val widgetModels = widgetVideos.map { it.toWidgetModel() }
+    val json = Json.encodeToString(widgetModels)
+    println("📱 JSON (showing ${widgetModels.size} videos): ${widgetModels.joinToString { it.title }}")
+
+    // Clear old data first
+    sharedDefaults.removeObjectForKey("youtubeVideos")
+
+    // Save new data
     sharedDefaults.setObject(json as Any, forKey = "youtubeVideos")
     val synced = sharedDefaults.synchronize()
     println("📱 Synchronize result: $synced")
 
     // Verify it was saved
     val readBack = sharedDefaults.stringForKey("youtubeVideos")
-    println("📱 Read back: ${readBack?.take(100)}")
+    if (readBack != null) {
+        println("📱 Verified: Data saved successfully, length: ${readBack.length}")
+        println("📱 First video in saved data: ${readBack.substringAfter("\"title\":\"").substringBefore("\"")}")
+    } else {
+        println("❌ Verification failed: Could not read back data")
+    }
+}
+
+// Helper to convert ByteArray to NSData
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+private fun ByteArray.toNSData(): NSData {
+    return this.usePinned { pinned ->
+        NSData.create(bytes = pinned.addressOf(0), length = this.size.toULong())
+    }
 }

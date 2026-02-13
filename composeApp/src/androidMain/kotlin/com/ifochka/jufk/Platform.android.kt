@@ -21,6 +21,6 @@ actual fun triggerHaptic(style: HapticStyle) {
     // TODO: Implement Android vibration/haptic feedback
 }
 
-actual fun saveVideosForWidget(videos: List<YoutubeVideo>) {
+actual suspend fun saveVideosForWidget(videos: List<YoutubeVideo>) {
     // No widget implementation for Android
 }

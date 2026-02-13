@@ -43,12 +43,32 @@ struct JUFKWidgetProvider: TimelineProvider {
     }
 
     private func loadVideosFromUserDefaults() -> JUFKWidgetEntry {
+        print("🔷 Widget loading videos from UserDefaults")
         let sharedDefaults = UserDefaults(suiteName: "group.com.ifochka.jufk.widgets")
-        if let jsonString = sharedDefaults?.string(forKey: "youtubeVideos"),
-           let data = jsonString.data(using: .utf8),
-           let videos = try? JSONDecoder().decode([YoutubeVideoWidget].self, from: data) {
-            return JUFKWidgetEntry(date: Date(), videos: Array(videos.prefix(4)))
+
+        if sharedDefaults == nil {
+            print("❌ Failed to create UserDefaults with suite name")
+            return JUFKWidgetEntry(date: Date(), videos: [])
         }
+
+        if let jsonString = sharedDefaults?.string(forKey: "youtubeVideos") {
+            print("🔷 Found JSON string: \(jsonString.prefix(200))")
+
+            if let data = jsonString.data(using: .utf8) {
+                if let videos = try? JSONDecoder().decode([YoutubeVideoWidget].self, from: data) {
+                    print("🔷 Decoded \(videos.count) videos: \(videos.map { $0.title })")
+                    print("🔷 Thumbnail URLs: \(videos.map { $0.thumbnailUrl ?? "nil" })")
+                    return JUFKWidgetEntry(date: Date(), videos: Array(videos.prefix(4)))
+                } else {
+                    print("❌ Failed to decode JSON")
+                }
+            } else {
+                print("❌ Failed to convert string to data")
+            }
+        } else {
+            print("❌ No data found for key 'youtubeVideos'")
+        }
+
         return JUFKWidgetEntry(date: Date(), videos: [])
     }
 }
@@ -62,7 +82,7 @@ struct JUFKWidgetEntryView: View {
         Group {
             if entry.videos.isEmpty {
                 // Empty state
-                VStack {
+                VStack(spacing: 8) {
                     Image(systemName: "play.rectangle.fill")
                         .font(.largeTitle)
                         .foregroundColor(.gray)
@@ -75,29 +95,28 @@ struct JUFKWidgetEntryView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                // Video grid
+                // Video layouts optimized for widget shapes
                 switch family {
                 case .systemSmall:
                     SingleVideoView(video: entry.videos[0])
+                        .padding(2)
                 case .systemMedium:
-                    HStack(spacing: 4) {
+                    // Show 2 videos side by side, optimized for medium widget
+                    HStack(spacing: 6) {
                         ForEach(0..<min(2, entry.videos.count), id: \.self) { index in
-                            VideoGridItem(video: entry.videos[index])
+                            MediumVideoItem(video: entry.videos[index])
                         }
                     }
+                    .padding(4)
                 case .systemLarge, .systemExtraLarge:
-                    VStack(spacing: 4) {
-                        ForEach(0..<2, id: \.self) { row in
-                            HStack(spacing: 4) {
-                                ForEach(0..<2, id: \.self) { col in
-                                    let index = row * 2 + col
-                                    if index < entry.videos.count {
-                                        VideoGridItem(video: entry.videos[index])
-                                    }
-                                }
-                            }
+                    // Show 2 videos vertically, giving more space for descriptions
+                    VStack(spacing: 8) {
+                        ForEach(0..<min(2, entry.videos.count), id: \.self) { index in
+                            LargeVideoItem(video: entry.videos[index])
                         }
+                        Spacer(minLength: 0)
                     }
+                    .padding(6)
                 default:
                     EmptyView()
                 }
@@ -112,72 +131,193 @@ struct SingleVideoView: View {
 
     var body: some View {
         Link(destination: URL(string: video.url)!) {
-            ZStack(alignment: .bottom) {
-                // Thumbnail
-                AsyncImage(url: URL(string: video.thumbnailUrl ?? "")) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Color.purple.opacity(0.3)
+            ZStack {
+                // Thumbnail with proper aspect ratio
+                GeometryReader { geometry in
+                    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.ifochka.jufk.widgets") {
+                        let imagePath = containerURL.appendingPathComponent("\(video.videoId).jpg")
+                        
+                        if let uiImage = UIImage(contentsOfFile: imagePath.path) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geometry.size.width, height: geometry.size.height)
+                                .clipped()
+                        } else {
+                            Rectangle()
+                                .fill(LinearGradient(
+                                    colors: [Color.purple.opacity(0.6), Color.blue.opacity(0.4)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
+                                .overlay(
+                                    Image(systemName: "photo")
+                                        .font(.largeTitle)
+                                        .foregroundColor(.white.opacity(0.6))
+                                )
+                        }
+                    } else {
+                        Rectangle()
+                            .fill(Color.purple.opacity(0.3))
+                    }
                 }
-
-                // Play overlay
+                
+                // Play overlay in center
                 Image(systemName: "play.circle.fill")
-                    .font(.system(size: 40))
-                    .foregroundColor(.white.opacity(0.9))
-                    .shadow(radius: 4)
+                    .font(.system(size: 44))
+                    .foregroundColor(.white)
+                    .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
 
-                // Title
+                // Title at bottom with better readability
                 VStack {
                     Spacer()
                     Text(video.title)
-                        .font(.caption)
-                        .lineLimit(2)
-                        .padding(6)
+                        .font(.system(.caption, design: .rounded, weight: .medium))
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 6)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.black.opacity(0.7))
+                        .background(
+                            LinearGradient(
+                                colors: [Color.clear, Color.black.opacity(0.8)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
                         .foregroundColor(.white)
                 }
             }
-            .cornerRadius(8)
-            .clipped()
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
-struct VideoGridItem: View {
+// Optimized for medium widget - side by side layout
+struct MediumVideoItem: View {
     let video: YoutubeVideoWidget
 
     var body: some View {
         Link(destination: URL(string: video.url)!) {
-            ZStack(alignment: .bottomLeading) {
-                // Thumbnail
-                AsyncImage(url: URL(string: video.thumbnailUrl ?? "")) { image in
-                    image.resizable().scaledToFill()
-                } placeholder: {
-                    Color.purple.opacity(0.3)
+            VStack(spacing: 4) {
+                // Thumbnail with 16:9 aspect ratio
+                ZStack {
+                    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.ifochka.jufk.widgets") {
+                        let imagePath = containerURL.appendingPathComponent("\(video.videoId).jpg")
+                        
+                        if let uiImage = UIImage(contentsOfFile: imagePath.path) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(16/9, contentMode: .fit)
+                                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        } else {
+                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                .fill(LinearGradient(
+                                    colors: [Color.purple.opacity(0.6), Color.blue.opacity(0.4)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
+                                .aspectRatio(16/9, contentMode: .fit)
+                                .overlay(
+                                    Image(systemName: "photo")
+                                        .font(.title2)
+                                        .foregroundColor(.white.opacity(0.6))
+                                )
+                        }
+                    }
+                    
+                    // Play button overlay
+                    Image(systemName: "play.circle.fill")
+                        .font(.title)
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                 }
+                
+                // Title with more space
+                Text(video.title)
+                    .font(.system(.caption2, design: .default, weight: .medium))
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .foregroundColor(.primary)
+            }
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
 
-                // Play icon
-                VStack {
+// Optimized for large widget - more spacious layout
+struct LargeVideoItem: View {
+    let video: YoutubeVideoWidget
+
+    var body: some View {
+        Link(destination: URL(string: video.url)!) {
+            HStack(spacing: 12) {
+                // Thumbnail
+                ZStack {
+                    if let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.ifochka.jufk.widgets") {
+                        let imagePath = containerURL.appendingPathComponent("\(video.videoId).jpg")
+                        
+                        if let uiImage = UIImage(contentsOfFile: imagePath.path) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .aspectRatio(16/9, contentMode: .fit)
+                                .frame(width: 120, height: 68)
+                                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        } else {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(LinearGradient(
+                                    colors: [Color.purple.opacity(0.6), Color.blue.opacity(0.4)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
+                                .frame(width: 120, height: 68)
+                                .overlay(
+                                    Image(systemName: "photo")
+                                        .font(.title3)
+                                        .foregroundColor(.white.opacity(0.6))
+                                )
+                        }
+                    }
+                    
+                    // Play button
                     Image(systemName: "play.circle.fill")
                         .font(.title2)
-                        .foregroundColor(.white.opacity(0.9))
-                        .shadow(radius: 2)
+                        .foregroundColor(.white)
+                        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                // Title
-                Text(video.title)
-                    .font(.caption2)
-                    .lineLimit(2)
-                    .padding(4)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.black.opacity(0.7))
-                    .foregroundColor(.white)
+                
+                // Title and description area
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(video.title)
+                        .font(.system(.caption, design: .default, weight: .medium))
+                        .lineLimit(4)
+                        .multilineTextAlignment(.leading)
+                        .foregroundColor(.primary)
+                    
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .cornerRadius(6)
-            .clipped()
+            .padding(.horizontal, 4)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(Color(UIColor.secondarySystemGroupedBackground))
+            )
         }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// Helper function for phase description
+func phaseDescription(_ phase: AsyncImagePhase) -> String {
+    switch phase {
+    case .empty: return "empty (loading)"
+    case .success: return "success"
+    case .failure: return "failure"
+    @unknown default: return "unknown"
     }
 }
 

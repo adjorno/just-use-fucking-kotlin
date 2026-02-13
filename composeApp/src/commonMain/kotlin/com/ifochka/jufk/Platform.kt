@@ -33,4 +33,4 @@ expect fun shareContent(url: String, title: String)
 
 expect fun triggerHaptic(style: HapticStyle = HapticStyle.LIGHT)
 
-expect fun saveVideosForWidget(videos: List<YoutubeVideo>)
+expect suspend fun saveVideosForWidget(videos: List<YoutubeVideo>)

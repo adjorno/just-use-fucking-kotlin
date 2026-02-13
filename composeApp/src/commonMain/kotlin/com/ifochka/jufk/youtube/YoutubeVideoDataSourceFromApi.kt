@@ -23,7 +23,10 @@ class YoutubeVideoDataSourceFromApi(
         return playlist.items.map {
             YoutubeVideo(
                 title = it.snippet.title,
-                thumbnailUrl = it.snippet.thumbnails.maxres?.url,
+                thumbnailUrl = it.snippet.thumbnails.maxres?.url
+                    ?: it.snippet.thumbnails.high?.url
+                    ?: it.snippet.thumbnails.medium?.url
+                    ?: it.snippet.thumbnails.default?.url,
                 url = "https://www.youtube.com/watch?v=${it.snippet.resourceId.videoId}",
             )
         }

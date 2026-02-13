@@ -21,6 +21,6 @@ actual fun triggerHaptic(style: HapticStyle) {
     // No haptic feedback on web
 }
 
-actual fun saveVideosForWidget(videos: List<YoutubeVideo>) {
+actual suspend fun saveVideosForWidget(videos: List<YoutubeVideo>) {
     // No widget implementation for Web
 }
