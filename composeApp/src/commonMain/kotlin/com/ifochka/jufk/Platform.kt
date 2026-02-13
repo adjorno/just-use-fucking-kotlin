@@ -1,5 +1,6 @@
 package com.ifochka.jufk
 
+import com.ifochka.jufk.youtube.YoutubeVideo
 import io.ktor.client.HttpClient
 
 interface Platform {
@@ -31,3 +32,5 @@ enum class HapticStyle {
 expect fun shareContent(url: String, title: String)
 
 expect fun triggerHaptic(style: HapticStyle = HapticStyle.LIGHT)
+
+expect fun saveVideosForWidget(videos: List<YoutubeVideo>)

@@ -1,5 +1,6 @@
 package com.ifochka.jufk
 
+import com.ifochka.jufk.youtube.YoutubeVideo
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 
@@ -18,4 +19,8 @@ actual fun shareContent(url: String, title: String) {
 
 actual fun triggerHaptic(style: HapticStyle) {
     // No haptic feedback on desktop
+}
+
+actual fun saveVideosForWidget(videos: List<YoutubeVideo>) {
+    // No widget implementation for Desktop
 }

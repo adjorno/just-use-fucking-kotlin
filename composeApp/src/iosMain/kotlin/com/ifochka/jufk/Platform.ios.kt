@@ -1,7 +1,12 @@
 package com.ifochka.jufk
 
+import com.ifochka.jufk.youtube.YoutubeVideo
+import com.ifochka.jufk.youtube.toWidgetModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.darwin.Darwin
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import platform.Foundation.NSUserDefaults
 import platform.Foundation.NSURL
 import platform.UIKit.*
 
@@ -34,30 +39,43 @@ actual fun triggerHaptic(style: HapticStyle) {
             generator.prepare()
             generator.impactOccurred()
         }
+
         HapticStyle.MEDIUM -> {
             val generator = UIImpactFeedbackGenerator(UIImpactFeedbackStyle.UIImpactFeedbackStyleMedium)
             generator.prepare()
             generator.impactOccurred()
         }
+
         HapticStyle.HEAVY -> {
             val generator = UIImpactFeedbackGenerator(UIImpactFeedbackStyle.UIImpactFeedbackStyleHeavy)
             generator.prepare()
             generator.impactOccurred()
         }
+
         HapticStyle.SUCCESS -> {
             val generator = UINotificationFeedbackGenerator()
             generator.prepare()
             generator.notificationOccurred(UINotificationFeedbackType.UINotificationFeedbackTypeSuccess)
         }
+
         HapticStyle.WARNING -> {
             val generator = UINotificationFeedbackGenerator()
             generator.prepare()
             generator.notificationOccurred(UINotificationFeedbackType.UINotificationFeedbackTypeWarning)
         }
+
         HapticStyle.ERROR -> {
             val generator = UINotificationFeedbackGenerator()
             generator.prepare()
             generator.notificationOccurred(UINotificationFeedbackType.UINotificationFeedbackTypeError)
         }
     }
+}
+
+actual fun saveVideosForWidget(videos: List<YoutubeVideo>) {
+    val sharedDefaults = NSUserDefaults(suiteName = "group.com.ifochka.jufk.widgets")
+    val widgetVideos = videos.take(4).map { it.toWidgetModel() }
+    val json = Json.encodeToString(widgetVideos)
+    sharedDefaults.setObject(json, forKey = "youtubeVideos")
+    sharedDefaults.synchronize()
 }
