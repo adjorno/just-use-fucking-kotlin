@@ -108,7 +108,7 @@ jobs:
     needs: extract-version
     uses: ./.github/workflows/template-android-build-and-publish.yml
     with:
-      destination: alpha
+      destination: beta
       version: ${{ needs.extract-version.outputs.version }}
     secrets: inherit
 
