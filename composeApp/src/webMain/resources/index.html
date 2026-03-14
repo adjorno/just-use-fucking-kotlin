@@ -7,6 +7,7 @@
     <meta name="description" content="One language. One codebase. Every platform. Stop hiring 5 teams. Learn Kotlin.">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
+    <!-- <meta name="apple-itunes-app" content="app-id=XXXXXXXXXX"> -->
     <style>
         html, body {
             margin: 0;
@@ -28,6 +29,38 @@
     </style>
 </head>
 <body>
+    <div id="app-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#1A1A1A;border-bottom:1px solid #333;padding:10px 12px;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif;align-items:center;gap:10px;">
+        <img src="favicon.png" alt="App icon" style="width:44px;height:44px;border-radius:10px;flex-shrink:0;">
+        <div style="flex:1;min-width:0;">
+            <div style="color:#fff;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Just Use Fucking Kotlin</div>
+            <div id="app-banner-label" style="color:#aaa;font-size:11px;margin-top:1px;"></div>
+        </div>
+        <a id="app-banner-link" href="#" target="_blank" rel="noopener" style="background:#7F52FF;color:#fff;font-size:12px;font-weight:600;padding:7px 14px;border-radius:16px;text-decoration:none;white-space:nowrap;flex-shrink:0;">Open</a>
+        <button aria-label="Close banner" onclick="(function(){localStorage.setItem('appBannerDismissed',Date.now());var b=document.getElementById('app-banner');b.style.display='none';document.body.style.paddingTop='0';})()" style="background:none;border:none;color:#aaa;font-size:18px;line-height:1;cursor:pointer;padding:0 4px;flex-shrink:0;">✕</button>
+    </div>
+    <script>
+    (function() {
+        var dismissed = localStorage.getItem('appBannerDismissed');
+        var oneWeek = 7 * 24 * 60 * 60 * 1000;
+        if (dismissed && (Date.now() - Number(dismissed) < oneWeek)) return;
+        var ua = navigator.userAgent;
+        var isAndroid = /Android/i.test(ua);
+        var isIOS = /iPhone|iPad|iPod/i.test(ua);
+        if (!isAndroid && !isIOS) return;
+        var banner = document.getElementById('app-banner');
+        var label = document.getElementById('app-banner-label');
+        var link = document.getElementById('app-banner-link');
+        if (isAndroid) {
+            label.textContent = 'Get it on Google Play';
+            link.href = 'https://play.google.com/store/apps/details?id=com.ifochka.jufk';
+        } else {
+            label.textContent = 'Download on TestFlight';
+            link.href = 'https://testflight.apple.com/join/sENnMKjM';
+        }
+        banner.style.display = 'flex';
+        document.body.style.paddingTop = banner.offsetHeight + 'px';
+    })();
+    </script>
     <div id="loading">Loading Kotlin...</div>
     <script src="composeApp.js"></script>
 </body>
