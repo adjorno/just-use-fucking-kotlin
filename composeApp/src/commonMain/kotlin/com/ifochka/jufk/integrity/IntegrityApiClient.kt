@@ -9,13 +9,17 @@ import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
 
 class IntegrityApiClient {
-    suspend fun verify(token: String, packageName: String): IntegrityVerdict? = runCatching {
-        val response = createHttpClient().post("https://api.m14n.com/integrity/verify") {
-            contentType(ContentType.Application.Json)
-            setBody("""{"integrityToken":"$token","packageName":"$packageName"}""")
-        }
-        json.decodeFromString<IntegrityVerdict>(response.bodyAsText())
-    }.getOrNull()
+    suspend fun verify(
+        token: String,
+        packageName: String,
+    ): IntegrityVerdict? =
+        runCatching {
+            val response = createHttpClient().post("https://api.m14n.com/integrity/verify") {
+                contentType(ContentType.Application.Json)
+                setBody("""{"integrityToken":"$token","packageName":"$packageName"}""")
+            }
+            json.decodeFromString<IntegrityVerdict>(response.bodyAsText())
+        }.getOrNull()
 
     companion object {
         private val json = Json { ignoreUnknownKeys = true }
