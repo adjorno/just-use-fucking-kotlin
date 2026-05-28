@@ -14,11 +14,7 @@ class IntegrityApiClient {
             contentType(ContentType.Application.Json)
             setBody("""{"integrityToken":"$token","packageName":"$packageName"}""")
         }
-        val body = response.bodyAsText()
-        println("IntegrityApiClient: status=${response.status} body=$body")
-        json.decodeFromString<IntegrityVerdict>(body)
-    }.onFailure { e ->
-        println("IntegrityApiClient: request failed — ${e::class.simpleName}: ${e.message}")
+        json.decodeFromString<IntegrityVerdict>(response.bodyAsText())
     }.getOrNull()
 
     companion object {
