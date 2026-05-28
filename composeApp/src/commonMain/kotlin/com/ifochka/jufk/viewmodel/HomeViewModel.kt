@@ -11,6 +11,8 @@ import com.ifochka.jufk.data.Content
 import com.ifochka.jufk.data.InspirationLink
 import com.ifochka.jufk.data.PlatformSection
 import com.ifochka.jufk.data.SocialLink
+import com.ifochka.jufk.integrity.IntegrityChecker
+import com.ifochka.jufk.integrity.IntegrityVerdict
 import com.ifochka.jufk.youtube.YoutubeVideo
 import com.ifochka.jufk.youtube.YoutubeVideoDataSourceFromApi
 import kotlinx.coroutines.launch
@@ -29,6 +31,9 @@ data class HomeUiState(
     val inspirationText: String = Content.INSPIRATION_TEXT,
     val inspirationLinks: List<InspirationLink> = Content.inspirationLinks,
     val inspirationSuffix: String = Content.INSPIRATION_SUFFIX,
+    val showAttestDialog: Boolean = false,
+    val isAttesting: Boolean = false,
+    val attestVerdict: IntegrityVerdict? = null,
 )
 
 /**
@@ -45,6 +50,17 @@ class HomeViewModel : ViewModel() {
 
     init {
         loadVideos()
+    }
+
+    fun attestApp() {
+        viewModelScope.launch {
+            uiState = uiState.copy(showAttestDialog = true, isAttesting = true, attestVerdict = null)
+            uiState = uiState.copy(isAttesting = false, attestVerdict = IntegrityChecker().verify())
+        }
+    }
+
+    fun dismissAttestDialog() {
+        uiState = uiState.copy(showAttestDialog = false)
     }
 
     private fun loadVideos() {

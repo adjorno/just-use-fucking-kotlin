@@ -71,6 +71,11 @@ fun App() {
                                     snackbarHostState.showSnackbar("Copied!")
                                 }
                             },
+                            onAttestApp = viewModel::attestApp,
+                            onDismissAttestDialog = viewModel::dismissAttestDialog,
+                            showAttestDialog = viewModel.uiState.showAttestDialog,
+                            isAttesting = viewModel.uiState.isAttesting,
+                            attestVerdict = viewModel.uiState.attestVerdict,
                             modifier = Modifier.padding(innerPadding),
                         )
                     }

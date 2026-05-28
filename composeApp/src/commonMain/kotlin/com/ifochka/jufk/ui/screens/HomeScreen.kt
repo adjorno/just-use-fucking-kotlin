@@ -16,10 +16,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.ifochka.jufk.data.Content
 import com.ifochka.jufk.data.InspirationLink
 import com.ifochka.jufk.data.PlatformSection
+import com.ifochka.jufk.integrity.IntegrityVerdict
 import com.ifochka.jufk.ui.components.HeroSection
 import com.ifochka.jufk.ui.components.PlatformSectionCard
 import com.ifochka.jufk.ui.theme.Dimensions
@@ -54,6 +58,11 @@ fun HomeScreen(
     inspirationLinks: List<InspirationLink>,
     inspirationSuffix: String,
     onCodeCopy: (String) -> Unit,
+    onAttestApp: () -> Unit,
+    onDismissAttestDialog: () -> Unit,
+    showAttestDialog: Boolean,
+    isAttesting: Boolean,
+    attestVerdict: IntegrityVerdict?,
     modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
@@ -198,6 +207,44 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = Dimensions.CONTENT_PADDING, vertical = 32.dp),
+        )
+
+        Button(
+            onClick = onAttestApp,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
+            ),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier.padding(bottom = 32.dp),
+        ) {
+            Text("Attest the app")
+        }
+    }
+
+    if (showAttestDialog) {
+        AlertDialog(
+            onDismissRequest = onDismissAttestDialog,
+            title = { Text("App Attestation") },
+            text = {
+                if (isAttesting) {
+                    CircularProgressIndicator()
+                } else if (attestVerdict == null) {
+                    Text("Not supported on this platform.")
+                } else {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text("Pass: ${attestVerdict.pass}")
+                        Text("App recognized: ${attestVerdict.appRecognized}")
+                        Text("Device integrity: ${attestVerdict.deviceIntegrity.joinToString()}")
+                        Text("Licensing: ${attestVerdict.licensingVerdict}")
+                    }
+                }
+            },
+            confirmButton = {
+                if (!isAttesting) {
+                    TextButton(onClick = onDismissAttestDialog) { Text("Dismiss") }
+                }
+            },
         )
     }
 }
